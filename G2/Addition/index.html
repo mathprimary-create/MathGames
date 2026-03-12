@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grade 2 Addition Game</title>
+
+<style>
+
+body{
+font-family:"Comic Sans MS", Arial;
+background:linear-gradient(135deg,#ffeaa7,#81ecec);
+text-align:center;
+margin:0;
+}
+
+h1{color:#d63031}
+
+.game{
+max-width:650px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:20px;
+box-shadow:0 10px 25px rgba(0,0,0,.2);
+}
+
+.problem{
+font-size:42px;
+margin:20px;
+}
+
+.buttons{
+display:flex;
+justify-content:center;
+gap:12px;
+flex-wrap:wrap;
+}
+
+button{
+font-size:20px;
+padding:12px 20px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+background:#74b9ff;
+}
+
+button:hover{
+background:#0984e3;
+color:white;
+}
+
+.stars{
+font-size:28px;
+}
+
+.message{
+font-size:22px;
+height:30px;
+color:#e17055;
+}
+
+canvas{
+position:fixed;
+top:0;
+left:0;
+pointer-events:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>➕ Addition Challenge</h1>
+
+<div class="game">
+
+<div class="stars" id="stars">☆☆☆☆☆☆☆☆☆☆</div>
+
+<div class="problem" id="problem"></div>
+
+<div class="message" id="message"></div>
+
+<div class="buttons" id="options"></div>
+
+</div>
+
+<canvas id="confetti"></canvas>
+
+<script>
+
+/* VARIABLES */
+
+let questions=[]
+let current=0
+let score=0
+
+const problem=document.getElementById("problem")
+const optionsDiv=document.getElementById("options")
+const message=document.getElementById("message")
+const stars=document.getElementById("stars")
+
+/* SOUNDS */
+
+const correctSound=new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg")
+const wrongSound=new Audio("https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg")
+
+/* GENERATE 3 DIGIT NO CARRY NUMBERS */
+
+function generateNoCarryPair(){
+
+let h1=Math.floor(Math.random()*9)+1
+let t1=Math.floor(Math.random()*10)
+let o1=Math.floor(Math.random()*10)
+
+let h2=Math.floor(Math.random()*(9-h1))
+let t2=Math.floor(Math.random()*(10-t1))
+let o2=Math.floor(Math.random()*(10-o1))
+
+let n1=h1*100+t1*10+o1
+let n2=h2*100+t2*10+o2
+
+return [n1,n2]
+
+}
+
+/* GENERATE QUESTIONS */
+
+function generateQuestions(){
+
+questions=[]
+
+for(let i=0;i<10;i++){
+
+let pair=generateNoCarryPair()
+
+let a=pair[0]
+let b=pair[1]
+
+let answer=a+b
+
+questions.push({a,b,answer})
+
+}
+
+}
+
+/* SHOW QUESTION */
+
+function showQuestion(){
+
+message.textContent=""
+
+let q=questions[current]
+
+problem.innerHTML=`${q.a} + ${q.b} = ?`
+
+createOptions(q.answer)
+
+updateStars()
+
+}
+
+/* CREATE OPTIONS */
+
+function createOptions(correct){
+
+let opts=[correct]
+
+while(opts.length<3){
+
+let wrong=correct+(Math.floor(Math.random()*40)-20)
+
+if(wrong>0 && !opts.includes(wrong)){
+opts.push(wrong)
+}
+
+}
+
+opts.sort(()=>Math.random()-0.5)
+
+optionsDiv.innerHTML=""
+
+opts.forEach(o=>{
+
+let btn=document.createElement("button")
+
+btn.textContent=o
+
+btn.onclick=()=>answer(o)
+
+optionsDiv.appendChild(btn)
+
+})
+
+}
+
+/* ANSWER */
+
+function answer(choice){
+
+let correct=questions[current].answer
+
+if(choice===correct){
+
+score++
+message.textContent="Correct!"
+correctSound.play()
+launchConfetti()
+
+}else{
+
+message.textContent="Wrong Answer"
+wrongSound.play()
+
+}
+
+setTimeout(()=>{
+
+current++
+
+if(current<10){
+showQuestion()
+}else{
+finishGame()
+}
+
+},900)
+
+}
+
+/* STARS */
+
+function updateStars(){
+
+let s=""
+
+for(let i=0;i<10;i++){
+s+=i<score?"⭐":"☆"
+}
+
+stars.textContent=s
+
+}
+
+/* FINISH */
+
+function finishGame(){
+
+optionsDiv.innerHTML=""
+problem.innerHTML=`Game Over`
+message.textContent=`Score ${score}/10`
+
+}
+
+/* CONFETTI */
+
+const canvas=document.getElementById("confetti")
+const ctx=canvas.getContext("2d")
+
+canvas.width=window.innerWidth
+canvas.height=window.innerHeight
+
+let confetti=[]
+
+function launchConfetti(){
+
+for(let i=0;i<60;i++){
+
+confetti.push({
+x:Math.random()*canvas.width,
+y:0,
+r:Math.random()*6+3,
+color:`hsl(${Math.random()*360},100%,50%)`,
+speed:Math.random()*3+2
+})
+
+}
+
+}
+
+function draw(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height)
+
+confetti.forEach((c,i)=>{
+
+ctx.beginPath()
+ctx.arc(c.x,c.y,c.r,0,Math.PI*2)
+ctx.fillStyle=c.color
+ctx.fill()
+
+c.y+=c.speed
+
+if(c.y>canvas.height) confetti.splice(i,1)
+
+})
+
+requestAnimationFrame(draw)
+
+}
+
+draw()
+
+/* START */
+
+generateQuestions()
+showQuestion()
+
+</script>
+
+</body>
+</html>
