@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Place Value Adventure</title>
+
+<style>
+
+body{
+font-family:"Comic Sans MS", Arial;
+background:linear-gradient(135deg,#ffeaa7,#81ecec);
+margin:0;
+text-align:center;
+}
+
+h1{
+color:#d63031;
+}
+
+.game{
+max-width:700px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:20px;
+box-shadow:0 10px 25px rgba(0,0,0,.2);
+}
+
+.number{
+font-size:60px;
+margin:20px;
+letter-spacing:8px;
+}
+
+.highlight{
+color:#e17055;
+font-weight:bold;
+}
+
+.question{
+font-size:26px;
+margin:10px;
+}
+
+.buttons{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:10px;
+}
+
+button{
+font-size:20px;
+padding:12px 18px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+background:#74b9ff;
+}
+
+button:hover{
+background:#0984e3;
+color:white;
+}
+
+.stars{
+font-size:28px;
+margin:10px;
+}
+
+.timer{
+color:#d63031;
+font-size:18px;
+}
+
+.controls{
+margin-top:10px;
+}
+
+.restart{
+background:#00b894;
+margin-top:10px;
+}
+
+table{
+width:100%;
+margin-top:15px;
+border-collapse:collapse;
+}
+
+th,td{
+border:1px solid #ddd;
+padding:6px;
+font-size:14px;
+}
+
+canvas{
+position:fixed;
+top:0;
+left:0;
+pointer-events:none;
+}
+
+@media(max-width:600px){
+.number{font-size:44px}
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>🏫 Place Value Adventure</h1>
+
+<div class="game">
+
+<div class="stars" id="stars">☆☆☆☆☆☆☆☆☆☆</div>
+
+<div class="timer">Time: <span id="time">10</span>s</div>
+
+<div class="number" id="number"></div>
+
+<div class="question">Which place value is the highlighted digit?</div>
+
+<div class="buttons">
+<button onclick="answer('ones')">Ones</button>
+<button onclick="answer('tens')">Tens</button>
+<button onclick="answer('hundreds')">Hundreds</button>
+<button onclick="answer('thousands')">Thousands</button>
+</div>
+
+<div class="controls">
+Student Name:
+<input id="student" placeholder="Enter name">
+</div>
+
+<button class="restart" onclick="restartGame()">Restart</button>
+
+<h3>📊 Teacher Scoreboard</h3>
+
+<table id="scores">
+<tr>
+<th>Name</th>
+<th>Score</th>
+<th>Time</th>
+</tr>
+</table>
+
+</div>
+
+<canvas id="confetti"></canvas>
+
+<script>
+
+/* GAME DATA */
+
+let questions=[]
+let current=0
+let score=0
+let timer=10
+let interval
+
+const numberDisplay=document.getElementById("number")
+const stars=document.getElementById("stars")
+const timeDisplay=document.getElementById("time")
+
+/* SOUNDS */
+
+const correctSound=new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg")
+const wrongSound=new Audio("https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg")
+
+/* QUESTION GENERATOR */
+
+function rand(min,max){
+return Math.floor(Math.random()*(max-min+1))+min
+}
+
+function generateQuestions(){
+
+questions=[]
+
+for(let i=0;i<10;i++){
+
+let num=rand(1000,9999)
+
+let places=["ones","tens","hundreds","thousands"]
+let place=places[rand(0,3)]
+
+questions.push({num,place})
+
+}
+
+}
+
+function showQuestion(){
+
+let q=questions[current]
+
+let digits=q.num.toString().split("")
+
+let index={
+thousands:0,
+hundreds:1,
+tens:2,
+ones:3
+}[q.place]
+
+digits[index]=`<span class="highlight">${digits[index]}</span>`
+
+numberDisplay.innerHTML=digits.join("")
+
+updateStars()
+startTimer()
+
+}
+
+/* TIMER */
+
+function startTimer(){
+
+clearInterval(interval)
+
+timer=10
+timeDisplay.textContent=timer
+
+interval=setInterval(()=>{
+
+timer--
+timeDisplay.textContent=timer
+
+if(timer<=0){
+clearInterval(interval)
+next(false)
+}
+
+},1000)
+
+}
+
+/* ANSWER */
+
+function answer(choice){
+
+clearInterval(interval)
+
+let q=questions[current]
+
+if(choice===q.place){
+
+score++
+correctSound.play()
+launchConfetti()
+next(true)
+
+}else{
+
+wrongSound.play()
+next(false)
+
+}
+
+}
+
+function next(){
+
+setTimeout(()=>{
+
+current++
+
+if(current<10){
+showQuestion()
+}else{
+finishGame()
+}
+
+},800)
+
+}
+
+/* STARS */
+
+function updateStars(){
+
+let s=""
+
+for(let i=0;i<10;i++){
+s+=i<score?"⭐":"☆"
+}
+
+stars.textContent=s
+
+}
+
+/* FINISH */
+
+function finishGame(){
+
+numberDisplay.innerHTML=`Game Finished! Score ${score}/10`
+updateStars()
+
+let name=document.getElementById("student").value||"Student"
+
+let row=document.createElement("tr")
+
+row.innerHTML=`<td>${name}</td><td>${score}/10</td><td>${new Date().toLocaleTimeString()}</td>`
+
+document.getElementById("scores").appendChild(row)
+
+}
+
+/* RESTART */
+
+function restartGame(){
+
+current=0
+score=0
+generateQuestions()
+showQuestion()
+
+}
+
+/* CONFETTI */
+
+const canvas=document.getElementById("confetti")
+const ctx=canvas.getContext("2d")
+
+canvas.width=window.innerWidth
+canvas.height=window.innerHeight
+
+let confetti=[]
+
+function launchConfetti(){
+
+for(let i=0;i<70;i++){
+
+confetti.push({
+x:Math.random()*canvas.width,
+y:0,
+r:Math.random()*6+3,
+color:`hsl(${Math.random()*360},100%,50%)`,
+speed:Math.random()*3+2
+})
+
+}
+
+}
+
+function draw(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height)
+
+confetti.forEach((c,i)=>{
+
+ctx.beginPath()
+ctx.arc(c.x,c.y,c.r,0,Math.PI*2)
+ctx.fillStyle=c.color
+ctx.fill()
+
+c.y+=c.speed
+
+if(c.y>canvas.height) confetti.splice(i,1)
+
+})
+
+requestAnimationFrame(draw)
+
+}
+
+draw()
+
+/* START */
+
+generateQuestions()
+showQuestion()
+
+</script>
+
+</body>
+</html>
