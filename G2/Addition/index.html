@@ -88,7 +88,7 @@ pointer-events:none;
 let questions=[]
 let current=0
 let score=0
-let level=3  // 1=easy, 2=medium, 3=grade 2 (3-digit)
+let level=3
 
 const problem=document.getElementById("problem")
 const optionsDiv=document.getElementById("options")
@@ -96,14 +96,15 @@ const message=document.getElementById("message")
 const stars=document.getElementById("stars")
 
 /* SOUNDS */
-const correctSound=new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg")
 const wrongSound=new Audio("https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg")
-const clapSound=new Audio("https://actions.google.com/sounds/v1/human_voices/applause.ogg")
 
+// ✅ YOUR BELL SOUND (correct answer)
+const successBell=new Audio("G2/Addition/Assets/mixkit-achievement-bell-600.wav")
+
+// Enable audio on first click
 document.body.addEventListener("click", () => {
-correctSound.play().then(()=>correctSound.pause())
 wrongSound.play().then(()=>wrongSound.pause())
-clapSound.play().then(()=>clapSound.pause())
+successBell.play().then(()=>successBell.pause())
 }, { once: true })
 
 /* GENERATE NUMBERS (SUM ≤ 999) */
@@ -112,8 +113,8 @@ function generateNoCarryPair(){
 let n1, n2
 
 if(level===3){
-n1 = Math.floor(Math.random()*900)+100   // 100–999
-n2 = Math.floor(Math.random()*(999-n1))  // ensures total ≤999
+n1 = Math.floor(Math.random()*900)+100
+n2 = Math.floor(Math.random()*(999-n1))
 }else{
 let max = level === 1 ? 9 : 99
 n1 = Math.floor(Math.random()*max)
@@ -177,8 +178,11 @@ if(choice===correct){
 
 score++
 message.textContent=praise[Math.floor(Math.random()*praise.length)]
-correctSound.play()
-clapSound.play()
+
+// 🔔 PLAY BELL SOUND
+successBell.currentTime = 0
+successBell.play()
+
 launchConfetti()
 
 setTimeout(()=>{
