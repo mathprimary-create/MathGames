@@ -97,16 +97,22 @@ const stars=document.getElementById("stars")
 
 /* SOUNDS */
 
-// ✅ Your bell sound (same folder as HTML)
-const successBell=new Audio("mixkit-achievement-bell-600.wav")
+// ✅ Bell sound (your file)
+const successBell = new Audio()
+successBell.src = "mixkit-achievement-bell-600.wav"
+successBell.preload = "auto"
 
-// ✅ Wrong answer sound (online)
-const wrongSound=new Audio("https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg")
+// ❌ Wrong sound (reliable online)
+const wrongSound = new Audio("https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg")
 
-// Enable audio on first click
-document.body.addEventListener("click", () => {
-successBell.play().then(()=>successBell.pause())
-wrongSound.play().then(()=>wrongSound.pause())
+// 🔓 Unlock audio (VERY IMPORTANT)
+document.addEventListener("click", () => {
+successBell.muted = true
+successBell.play().then(()=>{
+successBell.pause()
+successBell.currentTime = 0
+successBell.muted = false
+})
 }, { once: true })
 
 /* GENERATE NUMBERS (SUM ≤ 999) */
@@ -181,10 +187,10 @@ if(choice===correct){
 score++
 message.textContent=praise[Math.floor(Math.random()*praise.length)]
 
-// 🔔 PLAY CORRECT SOUND
+// 🔔 PLAY SOUND (fixed)
 successBell.pause()
 successBell.currentTime = 0
-successBell.play()
+successBell.play().catch(()=>{})
 
 launchConfetti()
 
@@ -201,7 +207,7 @@ finishGame()
 
 message.textContent="Oops! Try again 😊"
 
-// ❌ PLAY WRONG SOUND
+// ❌ WRONG SOUND
 wrongSound.pause()
 wrongSound.currentTime = 0
 wrongSound.play()
