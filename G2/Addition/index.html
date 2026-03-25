@@ -96,15 +96,17 @@ const message=document.getElementById("message")
 const stars=document.getElementById("stars")
 
 /* SOUNDS */
-const wrongSound=new Audio("https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg")
 
-// ✅ YOUR BELL SOUND (correct answer)
-const successBell=new Audio("G2/Addition/Assets/mixkit-achievement-bell-600.wav")
+// ✅ Your bell sound (same folder as HTML)
+const successBell=new Audio("mixkit-achievement-bell-600.wav")
+
+// ✅ Wrong answer sound (online)
+const wrongSound=new Audio("https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg")
 
 // Enable audio on first click
 document.body.addEventListener("click", () => {
-wrongSound.play().then(()=>wrongSound.pause())
 successBell.play().then(()=>successBell.pause())
+wrongSound.play().then(()=>wrongSound.pause())
 }, { once: true })
 
 /* GENERATE NUMBERS (SUM ≤ 999) */
@@ -179,7 +181,8 @@ if(choice===correct){
 score++
 message.textContent=praise[Math.floor(Math.random()*praise.length)]
 
-// 🔔 PLAY BELL SOUND
+// 🔔 PLAY CORRECT SOUND
+successBell.pause()
 successBell.currentTime = 0
 successBell.play()
 
@@ -197,6 +200,10 @@ finishGame()
 }else{
 
 message.textContent="Oops! Try again 😊"
+
+// ❌ PLAY WRONG SOUND
+wrongSound.pause()
+wrongSound.currentTime = 0
 wrongSound.play()
 
 }
