@@ -57,7 +57,7 @@ font-size:28px;
 
 .message{
 font-size:22px;
-height:30px;
+height:40px;
 color:#e17055;
 }
 
@@ -96,6 +96,7 @@ pointer-events:none;
 let questions=[]
 let current=0
 let score=0
+let level=3   // 1=easy, 2=medium, 3=hard
 
 const problem=document.getElementById("problem")
 const optionsDiv=document.getElementById("options")
@@ -107,20 +108,20 @@ const stars=document.getElementById("stars")
 const correctSound=new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg")
 const wrongSound=new Audio("https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg")
 
-/* GENERATE 3 DIGIT NO CARRY NUMBERS */
+// Enable sound on first click
+document.body.addEventListener("click", () => {
+correctSound.play().then(()=>correctSound.pause())
+wrongSound.play().then(()=>wrongSound.pause())
+}, { once: true })
+
+/* GENERATE NUMBERS BASED ON LEVEL */
 
 function generateNoCarryPair(){
 
-let h1=Math.floor(Math.random()*9)+1
-let t1=Math.floor(Math.random()*10)
-let o1=Math.floor(Math.random()*10)
+let max = level === 1 ? 9 : level === 2 ? 99 : 999
 
-let h2=Math.floor(Math.random()*(9-h1))
-let t2=Math.floor(Math.random()*(10-t1))
-let o2=Math.floor(Math.random()*(10-o1))
-
-let n1=h1*100+t1*10+o1
-let n2=h2*100+t2*10+o2
+let n1 = Math.floor(Math.random()*max)
+let n2 = Math.floor(Math.random()*max)
 
 return [n1,n2]
 
@@ -197,7 +198,11 @@ optionsDiv.appendChild(btn)
 
 }
 
-/* ANSWER */
+/* PRAISE MESSAGES */
+
+const praise=["Great job!","Awesome!","Well done!","Super!","Fantastic!","Nice work!"]
+
+/* ANSWER LOGIC */
 
 function answer(choice){
 
@@ -206,28 +211,27 @@ let correct=questions[current].answer
 if(choice===correct){
 
 score++
-message.textContent="Correct!"
+message.textContent=praise[Math.floor(Math.random()*praise.length)]
 correctSound.play()
 launchConfetti()
 
-}else{
-
-message.textContent="Wrong Answer"
-wrongSound.play()
-
-}
-
 setTimeout(()=>{
-
 current++
-
 if(current<10){
 showQuestion()
 }else{
 finishGame()
 }
-
 },900)
+
+}else{
+
+message.textContent="Oops! Try again 😊"
+wrongSound.play()
+
+// DO NOT move to next question
+
+}
 
 }
 
@@ -250,9 +254,26 @@ stars.textContent=s
 function finishGame(){
 
 optionsDiv.innerHTML=""
-problem.innerHTML=`Game Over`
-message.textContent=`Score ${score}/10`
 
+problem.innerHTML=`🎉 Game Over`
+
+message.innerHTML=`Score ${score}/10 <br><br>`
+
+let btn=document.createElement("button")
+btn.textContent="Play Again"
+btn.onclick=restartGame
+
+optionsDiv.appendChild(btn)
+
+}
+
+/* RESTART */
+
+function restartGame(){
+current=0
+score=0
+generateQuestions()
+showQuestion()
 }
 
 /* CONFETTI */
