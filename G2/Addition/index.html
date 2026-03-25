@@ -12,9 +12,7 @@ background:linear-gradient(135deg,#ffeaa7,#81ecec);
 text-align:center;
 margin:0;
 }
-
 h1{color:#d63031}
-
 .game{
 max-width:650px;
 margin:auto;
@@ -23,19 +21,13 @@ padding:20px;
 border-radius:20px;
 box-shadow:0 10px 25px rgba(0,0,0,.2);
 }
-
-.problem{
-font-size:42px;
-margin:20px;
-}
-
+.problem{font-size:42px;margin:20px;}
 .buttons{
 display:flex;
 justify-content:center;
 gap:12px;
 flex-wrap:wrap;
 }
-
 button{
 font-size:20px;
 padding:12px 20px;
@@ -44,28 +36,10 @@ border-radius:10px;
 cursor:pointer;
 background:#74b9ff;
 }
-
-button:hover{
-background:#0984e3;
-color:white;
-}
-
-.stars{
-font-size:28px;
-}
-
-.message{
-font-size:22px;
-height:40px;
-color:#e17055;
-}
-
-canvas{
-position:fixed;
-top:0;
-left:0;
-pointer-events:none;
-}
+button:hover{background:#0984e3;color:white;}
+.stars{font-size:28px;}
+.message{font-size:22px;height:40px;color:#e17055;}
+canvas{position:fixed;top:0;left:0;pointer-events:none;}
 </style>
 </head>
 
@@ -88,52 +62,34 @@ pointer-events:none;
 let questions=[]
 let current=0
 let score=0
-let level=3
 
 const problem=document.getElementById("problem")
 const optionsDiv=document.getElementById("options")
 const message=document.getElementById("message")
 const stars=document.getElementById("stars")
 
-/* SOUNDS */
-
-// 🔔 Embedded bell
+/* SOUNDS (RELIABLE) */
 const successBell = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg")
-// ❌ Wrong sound
 const wrongSound = new Audio("https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg")
 
-// Unlock sound
+// 🔓 Unlock audio (REQUIRED)
 document.addEventListener("click", () => {
-successBell.muted = true
-successBell.play().then(()=>{
-successBell.pause()
-successBell.currentTime = 0
-successBell.muted = false
-})
+successBell.play().then(()=>successBell.pause())
+wrongSound.play().then(()=>wrongSound.pause())
 }, { once: true })
 
 /* GENERATE NUMBERS (SUM ≤ 999) */
-function generateNoCarryPair(){
-
-let n1, n2
-
-if(level===3){
-n1 = Math.floor(Math.random()*900)+100
-n2 = Math.floor(Math.random()*(999-n1))
-}else{
-let max = level === 1 ? 9 : 99
-n1 = Math.floor(Math.random()*max)
-n2 = Math.floor(Math.random()*max)
-}
-
-return [n1,n2]
+function generatePair(){
+let a = Math.floor(Math.random()*900)+100
+let b = Math.floor(Math.random()*(999-a))
+return [a,b]
 }
 
 /* GENERATE QUESTIONS */
 function generateQuestions(){
 questions=[]
 for(let i=0;i<10;i++){
-let [a,b]=generateNoCarryPair()
+let [a,b]=generatePair()
 questions.push({a,b,answer:a+b})
 }
 }
@@ -147,19 +103,20 @@ createOptions(q.answer)
 updateStars()
 }
 
-/* OPTIONS (FULL RANDOM) */
+/* OPTIONS (FIXED RANDOM) */
 function createOptions(correct){
 
 let opts=[correct]
 
+// generate wrong answers
 while(opts.length<3){
-let wrong=correct+(Math.floor(Math.random()*40)-20)
+let wrong = correct + (Math.floor(Math.random()*40)-20)
 if(wrong>0 && !opts.includes(wrong)){
 opts.push(wrong)
 }
 }
 
-// 🔀 Proper shuffle
+// ✅ PROPER SHUFFLE
 for(let i=opts.length-1;i>0;i--){
 let j=Math.floor(Math.random()*(i+1))
 let temp=opts[i]
@@ -175,11 +132,10 @@ btn.textContent=o
 btn.onclick=()=>answer(o)
 optionsDiv.appendChild(btn)
 })
-
 }
 
 /* PRAISE */
-const praise=["Great job!","Awesome!","Well done!","Super!","Fantastic!","Nice work!"]
+const praise=["Great job!","Awesome!","Well done!","Super!"]
 
 /* ANSWER */
 function answer(choice){
@@ -191,10 +147,10 @@ if(choice===correct){
 score++
 message.textContent=praise[Math.floor(Math.random()*praise.length)]
 
-// 🔔 sound
+// 🔔 PLAY SOUND (FIXED)
 successBell.pause()
-successBell.currentTime = 0
-successBell.play().catch(()=>{})
+successBell.currentTime=0
+successBell.play()
 
 launchConfetti()
 
@@ -212,7 +168,7 @@ finishGame()
 message.textContent="Oops! Try again 😊"
 
 wrongSound.pause()
-wrongSound.currentTime = 0
+wrongSound.currentTime=0
 wrongSound.play()
 
 }
@@ -231,8 +187,8 @@ stars.textContent=s
 /* FINISH */
 function finishGame(){
 optionsDiv.innerHTML=""
-problem.innerHTML=`🎉 Game Over`
-message.innerHTML=`Score ${score}/10 <br><br>`
+problem.innerHTML="🎉 Game Over"
+message.innerHTML=`Score ${score}/10<br><br>`
 let btn=document.createElement("button")
 btn.textContent="Play Again"
 btn.onclick=restartGame
