@@ -97,15 +97,13 @@ const stars=document.getElementById("stars")
 
 /* SOUNDS */
 
-// ✅ Bell sound (your file)
-const successBell = new Audio()
-successBell.src = "mixkit-achievement-bell-600.wav"
-successBell.preload = "auto"
+// 🔔 Embedded bell
+const successBell = new Audio("data:audio/wav;base64,UklGRlQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=")
 
-// ❌ Wrong sound (reliable online)
+// ❌ Wrong sound
 const wrongSound = new Audio("https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg")
 
-// 🔓 Unlock audio (VERY IMPORTANT)
+// Unlock sound
 document.addEventListener("click", () => {
 successBell.muted = true
 successBell.play().then(()=>{
@@ -150,7 +148,7 @@ createOptions(q.answer)
 updateStars()
 }
 
-/* OPTIONS */
+/* OPTIONS (FULL RANDOM) */
 function createOptions(correct){
 
 let opts=[correct]
@@ -162,7 +160,13 @@ opts.push(wrong)
 }
 }
 
-opts.sort(()=>Math.random()-0.5)
+// 🔀 Proper shuffle
+for(let i=opts.length-1;i>0;i--){
+let j=Math.floor(Math.random()*(i+1))
+let temp=opts[i]
+opts[i]=opts[j]
+opts[j]=temp
+}
 
 optionsDiv.innerHTML=""
 
@@ -172,6 +176,7 @@ btn.textContent=o
 btn.onclick=()=>answer(o)
 optionsDiv.appendChild(btn)
 })
+
 }
 
 /* PRAISE */
@@ -187,7 +192,7 @@ if(choice===correct){
 score++
 message.textContent=praise[Math.floor(Math.random()*praise.length)]
 
-// 🔔 PLAY SOUND (fixed)
+// 🔔 sound
 successBell.pause()
 successBell.currentTime = 0
 successBell.play().catch(()=>{})
@@ -207,7 +212,6 @@ finishGame()
 
 message.textContent="Oops! Try again 😊"
 
-// ❌ WRONG SOUND
 wrongSound.pause()
 wrongSound.currentTime = 0
 wrongSound.play()
