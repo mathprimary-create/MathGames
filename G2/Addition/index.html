@@ -68,14 +68,24 @@ const optionsDiv=document.getElementById("options")
 const message=document.getElementById("message")
 const stars=document.getElementById("stars")
 
-/* SOUNDS (RELIABLE) */
-const successBell = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg")
+/* SOUNDS */
+
+// ✅ YOUR MP3 SOUND
+const successBell = new Audio()
+successBell.src = "correct-bell-twinkle-jam-fx-1-00-05.mp3"
+successBell.preload = "auto"
+
+// ❌ Wrong sound
 const wrongSound = new Audio("https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg")
 
-// 🔓 Unlock audio (REQUIRED)
+// 🔓 Unlock sound (important)
 document.addEventListener("click", () => {
-successBell.play().then(()=>successBell.pause())
-wrongSound.play().then(()=>wrongSound.pause())
+successBell.muted = true
+successBell.play().then(()=>{
+successBell.pause()
+successBell.currentTime = 0
+successBell.muted = false
+}).catch(()=>{})
 }, { once: true })
 
 /* GENERATE NUMBERS (SUM ≤ 999) */
@@ -103,12 +113,11 @@ createOptions(q.answer)
 updateStars()
 }
 
-/* OPTIONS (FIXED RANDOM) */
+/* OPTIONS (RANDOMIZED PROPERLY) */
 function createOptions(correct){
 
 let opts=[correct]
 
-// generate wrong answers
 while(opts.length<3){
 let wrong = correct + (Math.floor(Math.random()*40)-20)
 if(wrong>0 && !opts.includes(wrong)){
@@ -116,7 +125,7 @@ opts.push(wrong)
 }
 }
 
-// ✅ PROPER SHUFFLE
+// shuffle
 for(let i=opts.length-1;i>0;i--){
 let j=Math.floor(Math.random()*(i+1))
 let temp=opts[i]
@@ -147,10 +156,10 @@ if(choice===correct){
 score++
 message.textContent=praise[Math.floor(Math.random()*praise.length)]
 
-// 🔔 PLAY SOUND (FIXED)
+// 🔔 PLAY SOUND
 successBell.pause()
 successBell.currentTime=0
-successBell.play()
+successBell.play().catch(()=>{})
 
 launchConfetti()
 
