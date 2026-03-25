@@ -6,7 +6,6 @@
 <title>Grade 2 Addition Game</title>
 
 <style>
-
 body{
 font-family:"Comic Sans MS", Arial;
 background:linear-gradient(135deg,#ffeaa7,#81ecec);
@@ -67,7 +66,6 @@ top:0;
 left:0;
 pointer-events:none;
 }
-
 </style>
 </head>
 
@@ -76,15 +74,10 @@ pointer-events:none;
 <h1>➕ Addition Challenge</h1>
 
 <div class="game">
-
 <div class="stars" id="stars">☆☆☆☆☆☆☆☆☆☆</div>
-
 <div class="problem" id="problem"></div>
-
 <div class="message" id="message"></div>
-
 <div class="buttons" id="options"></div>
-
 </div>
 
 <canvas id="confetti"></canvas>
@@ -92,11 +85,10 @@ pointer-events:none;
 <script>
 
 /* VARIABLES */
-
 let questions=[]
 let current=0
 let score=0
-let level=3
+let level=3  // 1=easy, 2=medium, 3=grade 2 (3-digit)
 
 const problem=document.getElementById("problem")
 const optionsDiv=document.getElementById("options")
@@ -104,82 +96,61 @@ const message=document.getElementById("message")
 const stars=document.getElementById("stars")
 
 /* SOUNDS */
-
 const correctSound=new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg")
 const wrongSound=new Audio("https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg")
 const clapSound=new Audio("https://actions.google.com/sounds/v1/human_voices/applause.ogg")
 
-// Enable sound on first click
 document.body.addEventListener("click", () => {
 correctSound.play().then(()=>correctSound.pause())
 wrongSound.play().then(()=>wrongSound.pause())
 clapSound.play().then(()=>clapSound.pause())
 }, { once: true })
 
-/* GENERATE NUMBERS */
-
+/* GENERATE NUMBERS (SUM ≤ 999) */
 function generateNoCarryPair(){
 
-let max = level === 1 ? 9 : level === 2 ? 99 : 999
+let n1, n2
 
-let n1 = Math.floor(Math.random()*max)
-let n2 = Math.floor(Math.random()*max)
+if(level===3){
+n1 = Math.floor(Math.random()*900)+100   // 100–999
+n2 = Math.floor(Math.random()*(999-n1))  // ensures total ≤999
+}else{
+let max = level === 1 ? 9 : 99
+n1 = Math.floor(Math.random()*max)
+n2 = Math.floor(Math.random()*max)
+}
 
 return [n1,n2]
-
 }
 
 /* GENERATE QUESTIONS */
-
 function generateQuestions(){
-
 questions=[]
-
 for(let i=0;i<10;i++){
-
-let pair=generateNoCarryPair()
-
-let a=pair[0]
-let b=pair[1]
-
-let answer=a+b
-
-questions.push({a,b,answer})
-
+let [a,b]=generateNoCarryPair()
+questions.push({a,b,answer:a+b})
 }
-
 }
 
 /* SHOW QUESTION */
-
 function showQuestion(){
-
 message.textContent=""
-
 let q=questions[current]
-
 problem.innerHTML=`${q.a} + ${q.b} = ?`
-
 createOptions(q.answer)
-
 updateStars()
-
 }
 
-/* CREATE OPTIONS */
-
+/* OPTIONS */
 function createOptions(correct){
 
 let opts=[correct]
 
 while(opts.length<3){
-
 let wrong=correct+(Math.floor(Math.random()*40)-20)
-
 if(wrong>0 && !opts.includes(wrong)){
 opts.push(wrong)
 }
-
 }
 
 opts.sort(()=>Math.random()-0.5)
@@ -187,25 +158,17 @@ opts.sort(()=>Math.random()-0.5)
 optionsDiv.innerHTML=""
 
 opts.forEach(o=>{
-
 let btn=document.createElement("button")
-
 btn.textContent=o
-
 btn.onclick=()=>answer(o)
-
 optionsDiv.appendChild(btn)
-
 })
-
 }
 
 /* PRAISE */
-
 const praise=["Great job!","Awesome!","Well done!","Super!","Fantastic!","Nice work!"]
 
 /* ANSWER */
-
 function answer(choice){
 
 let correct=questions[current].answer
@@ -225,7 +188,7 @@ showQuestion()
 }else{
 finishGame()
 }
-},3000) // ⏳ 3 SECOND DELAY
+},3000)
 
 }else{
 
@@ -237,39 +200,26 @@ wrongSound.play()
 }
 
 /* STARS */
-
 function updateStars(){
-
 let s=""
-
 for(let i=0;i<10;i++){
 s+=i<score?"⭐":"☆"
 }
-
 stars.textContent=s
-
 }
 
 /* FINISH */
-
 function finishGame(){
-
 optionsDiv.innerHTML=""
-
 problem.innerHTML=`🎉 Game Over`
-
 message.innerHTML=`Score ${score}/10 <br><br>`
-
 let btn=document.createElement("button")
 btn.textContent="Play Again"
 btn.onclick=restartGame
-
 optionsDiv.appendChild(btn)
-
 }
 
 /* RESTART */
-
 function restartGame(){
 current=0
 score=0
@@ -278,7 +228,6 @@ showQuestion()
 }
 
 /* CONFETTI */
-
 const canvas=document.getElementById("confetti")
 const ctx=canvas.getContext("2d")
 
@@ -288,9 +237,7 @@ canvas.height=window.innerHeight
 let confetti=[]
 
 function launchConfetti(){
-
 for(let i=0;i<60;i++){
-
 confetti.push({
 x:Math.random()*canvas.width,
 y:0,
@@ -298,36 +245,25 @@ r:Math.random()*6+3,
 color:`hsl(${Math.random()*360},100%,50%)`,
 speed:Math.random()*3+2
 })
-
 }
-
 }
 
 function draw(){
-
 ctx.clearRect(0,0,canvas.width,canvas.height)
-
 confetti.forEach((c,i)=>{
-
 ctx.beginPath()
 ctx.arc(c.x,c.y,c.r,0,Math.PI*2)
 ctx.fillStyle=c.color
 ctx.fill()
-
 c.y+=c.speed
-
 if(c.y>canvas.height) confetti.splice(i,1)
-
 })
-
 requestAnimationFrame(draw)
-
 }
 
 draw()
 
 /* START */
-
 generateQuestions()
 showQuestion()
 
