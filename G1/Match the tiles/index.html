@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Flip Match Game</title>
 
 <style>
@@ -11,31 +12,52 @@ body{
     background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
     color:white;
     margin:0;
+    padding:0;
+    min-height:100vh;
+    width:100vw;
     overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
 }
 
-h1{ margin-top:20px; }
+/* HEADER */
+h1{
+    margin-top:15px;
+    font-size:clamp(20px,4vw,32px);
+}
 
+p{
+    margin:5px 0 10px 0;
+    font-size:clamp(12px,2.5vw,16px);
+}
+
+/* BOARD */
 .board{
     display:grid;
-    grid-template-columns: repeat(4, 120px);
-    gap:15px;
+    grid-template-columns: repeat(4, minmax(60px, 1fr));
+    gap:10px;
     justify-content:center;
-    margin-top:30px;
+    margin-top:10px;
+    padding:10px;
+    width:95vw;
+    max-width:500px;
 }
 
+/* CARD */
 .card{
-    width:120px;
-    height:80px;
+    width:100%;
+    height:70px;
     display:flex;
     align-items:center;
     justify-content:center;
     border-radius:12px;
     cursor:pointer;
     font-weight:bold;
-    font-size:14px;
-    transition:0.3s;
+    font-size:clamp(12px, 2.5vw, 14px);
+    transition:0.25s ease;
     user-select:none;
+    box-shadow:0 4px 10px rgba(0,0,0,0.25);
 }
 
 .normal{
@@ -56,10 +78,11 @@ h1{ margin-top:20px; }
     box-shadow:0 0 15px #06d6a0;
 }
 
+/* BUTTON */
 button{
     padding:10px 20px;
-    margin-top:20px;
-    font-size:16px;
+    margin-top:10px;
+    font-size:14px;
     border:none;
     border-radius:10px;
     cursor:pointer;
@@ -71,7 +94,7 @@ button:hover{
     transform:scale(1.05);
 }
 
-/* FIREWORK CANVAS */
+/* FIREWORKS */
 #fireworks{
     position:fixed;
     top:0;
@@ -98,20 +121,19 @@ button:hover{
 }
 
 #winScreen h1{
-    font-size:60px;
+    font-size:clamp(40px,8vw,70px);
     color:#ffd166;
     margin:0;
     animation:pop 1s ease-in-out infinite alternate;
 }
 
 #winScreen p{
-    font-size:22px;
-    margin-top:10px;
+    font-size:clamp(16px,3vw,22px);
 }
 
 @keyframes pop{
-    from{ transform:scale(1); }
-    to{ transform:scale(1.1); }
+    from{transform:scale(1);}
+    to{transform:scale(1.1);}
 }
 </style>
 </head>
@@ -133,7 +155,7 @@ button:hover{
     <p>Amazing job! All pairs matched!</p>
 </div>
 
-<!-- WIN MUSIC -->
+<!-- MUSIC -->
 <audio id="winMusic"
 src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_d0b6b6b5c3.mp3?filename=success-fanfare-trumpets-6185.mp3">
 </audio>
@@ -144,7 +166,7 @@ src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_d0b6b6b5c3.mp3?file
 const correctSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_115b9bcd1a.mp3?filename=correct-2-46134.mp3");
 const wrongSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_9c6d4d1c57.mp3?filename=error-2-126514.mp3");
 
-// ---------------- NUMBER WORDS ----------------
+// ---------------- WORDS ----------------
 const words = [
 "Zero","One","Two","Three","Four","Five","Six","Seven","Eight","Nine",
 "Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen",
@@ -162,7 +184,7 @@ function twoDigitWords(n){
     return u === 0 ? tens[t] : `${tens[t]}-${words[u]}`;
 }
 
-// ---------------- GAME STATE ----------------
+// ---------------- STATE ----------------
 let cards = [];
 let flipped = [];
 let matched = [];
@@ -228,7 +250,6 @@ function render(){
         }
 
         div.onclick = () => flip(i);
-
         board.appendChild(div);
     });
 }
@@ -264,7 +285,7 @@ function flip(i){
                 lock = false;
                 render();
                 checkWin();
-            },700);
+            },600);
 
         } else {
 
@@ -275,7 +296,7 @@ function flip(i){
                 flipped = [];
                 lock = false;
                 render();
-            },900);
+            },800);
         }
     }
 }
@@ -294,8 +315,8 @@ function showWinScreen(){
 
     document.getElementById("winMusic").play();
 
-    createFireworkBurst();
-    setInterval(createFireworkBurst, 800);
+    burstFireworks();
+    setInterval(burstFireworks, 800);
 }
 
 // ---------------- FIREWORKS ----------------
@@ -310,7 +331,7 @@ function resize(){
 resize();
 window.addEventListener("resize", resize);
 
-function createFireworkBurst(){
+function burstFireworks(){
     for(let i=0;i<80;i++){
         particles.push({
             x: Math.random()*canvas.width,
@@ -345,7 +366,7 @@ function animate(){
 }
 animate();
 
-// START
+// INIT
 startGame();
 
 </script>
