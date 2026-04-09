@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Flip Match Game</title>
+
+<style>
+body{
+    font-family: Arial;
+    text-align:center;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+    margin:0;
+    overflow:hidden;
+}
+
+h1{ margin-top:20px; }
+
+.board{
+    display:grid;
+    grid-template-columns: repeat(4, 120px);
+    gap:15px;
+    justify-content:center;
+    margin-top:30px;
+}
+
+.card{
+    width:120px;
+    height:80px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:bold;
+    font-size:14px;
+    transition:0.3s;
+    user-select:none;
+}
+
+.normal{
+    background:#ffb703;
+    color:#000;
+}
+
+.flipped{
+    background:#219ebc;
+    color:white;
+    transform:scale(1.05);
+}
+
+.matched{
+    background:#06d6a0;
+    color:white;
+    cursor:default;
+    box-shadow:0 0 15px #06d6a0;
+}
+
+button{
+    padding:10px 20px;
+    margin-top:20px;
+    font-size:16px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    background:#ff006e;
+    color:white;
+}
+
+button:hover{
+    transform:scale(1.05);
+}
+
+/* FIREWORK CANVAS */
+#fireworks{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    z-index:999;
+}
+
+/* WIN SCREEN */
+#winScreen{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.75);
+    display:none;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
+}
+
+#winScreen h1{
+    font-size:60px;
+    color:#ffd166;
+    margin:0;
+    animation:pop 1s ease-in-out infinite alternate;
+}
+
+#winScreen p{
+    font-size:22px;
+    margin-top:10px;
+}
+
+@keyframes pop{
+    from{ transform:scale(1); }
+    to{ transform:scale(1.1); }
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎯 Flip Match Game</h1>
+<p>Match Numbers with Number Names</p>
+
+<div id="board" class="board"></div>
+<button onclick="startGame()">Restart</button>
+
+<!-- FIREWORKS -->
+<canvas id="fireworks"></canvas>
+
+<!-- WIN SCREEN -->
+<div id="winScreen">
+    <h1>YOU WIN! 🎉</h1>
+    <p>Amazing job! All pairs matched!</p>
+</div>
+
+<!-- WIN MUSIC -->
+<audio id="winMusic"
+src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_d0b6b6b5c3.mp3?filename=success-fanfare-trumpets-6185.mp3">
+</audio>
+
+<script>
+
+// ---------------- SOUNDS ----------------
+const correctSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_115b9bcd1a.mp3?filename=correct-2-46134.mp3");
+const wrongSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_9c6d4d1c57.mp3?filename=error-2-126514.mp3");
+
+// ---------------- NUMBER WORDS ----------------
+const words = [
+"Zero","One","Two","Three","Four","Five","Six","Seven","Eight","Nine",
+"Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen",
+"Sixteen","Seventeen","Eighteen","Nineteen"
+];
+
+function twoDigitWords(n){
+    const tens = ["","Ten","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+
+    if(n < 20) return words[n];
+
+    let t = Math.floor(n/10);
+    let u = n%10;
+
+    return u === 0 ? tens[t] : `${tens[t]}-${words[u]}`;
+}
+
+// ---------------- GAME STATE ----------------
+let cards = [];
+let flipped = [];
+let matched = [];
+let lock = false;
+
+// ---------------- START GAME ----------------
+function startGame(){
+
+    document.getElementById("winScreen").style.display = "none";
+
+    cards = [];
+    flipped = [];
+    matched = [];
+    lock = false;
+
+    let nums = [];
+
+    while(nums.length < 6){
+        let n = Math.floor(Math.random()*50);
+        if(!nums.includes(n)) nums.push(n);
+    }
+
+    nums.forEach(n=>{
+        cards.push({value:n.toString(), match: twoDigitWords(n)});
+        cards.push({value: twoDigitWords(n), match: n.toString()});
+    });
+
+    shuffle(cards);
+    render();
+}
+
+// ---------------- SHUFFLE ----------------
+function shuffle(arr){
+    for(let i=arr.length-1;i>0;i--){
+        let j=Math.floor(Math.random()*(i+1));
+        [arr[i],arr[j]]=[arr[j],arr[i]];
+    }
+}
+
+// ---------------- RENDER ----------------
+function render(){
+    let board = document.getElementById("board");
+    board.innerHTML = "";
+
+    cards.forEach((c,i)=>{
+
+        let div = document.createElement("div");
+
+        let isMatched = matched.includes(i);
+        let isFlipped = flipped.includes(i);
+
+        if(isMatched){
+            div.className = "card matched";
+            div.innerText = c.value;
+        }
+        else if(isFlipped){
+            div.className = "card flipped";
+            div.innerText = c.value;
+        }
+        else{
+            div.className = "card normal";
+            div.innerText = "❓";
+        }
+
+        div.onclick = () => flip(i);
+
+        board.appendChild(div);
+    });
+}
+
+// ---------------- FLIP ----------------
+function flip(i){
+
+    if(lock) return;
+    if(flipped.includes(i) || matched.includes(i)) return;
+
+    flipped.push(i);
+    render();
+
+    if(flipped.length === 2){
+
+        lock = true;
+
+        let i1 = flipped[0];
+        let i2 = flipped[1];
+
+        let c1 = cards[i1];
+        let c2 = cards[i2];
+
+        if(c1.match === c2.value){
+
+            matched.push(i1,i2);
+
+            correctSound.currentTime = 0;
+            correctSound.play();
+
+            setTimeout(()=>{
+                flipped = [];
+                lock = false;
+                render();
+                checkWin();
+            },700);
+
+        } else {
+
+            wrongSound.currentTime = 0;
+            wrongSound.play();
+
+            setTimeout(()=>{
+                flipped = [];
+                lock = false;
+                render();
+            },900);
+        }
+    }
+}
+
+// ---------------- WIN CHECK ----------------
+function checkWin(){
+    if(matched.length === cards.length){
+        showWinScreen();
+    }
+}
+
+// ---------------- WIN SCREEN ----------------
+function showWinScreen(){
+
+    document.getElementById("winScreen").style.display = "flex";
+
+    document.getElementById("winMusic").play();
+
+    createFireworkBurst();
+    setInterval(createFireworkBurst, 800);
+}
+
+// ---------------- FIREWORKS ----------------
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("2d");
+let particles = [];
+
+function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener("resize", resize);
+
+function createFireworkBurst(){
+    for(let i=0;i<80;i++){
+        particles.push({
+            x: Math.random()*canvas.width,
+            y: Math.random()*canvas.height/2,
+            angle: Math.random()*2*Math.PI,
+            speed: Math.random()*6+2,
+            radius: Math.random()*3+1,
+            alpha: 1
+        });
+    }
+}
+
+function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    particles.forEach(p=>{
+        p.x += Math.cos(p.angle)*p.speed;
+        p.y += Math.sin(p.angle)*p.speed;
+        p.alpha -= 0.01;
+    });
+
+    particles = particles.filter(p=>p.alpha>0);
+
+    particles.forEach(p=>{
+        ctx.fillStyle = `rgba(255,215,0,${p.alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
+        ctx.fill();
+    });
+
+    requestAnimationFrame(animate);
+}
+animate();
+
+// START
+startGame();
+
+</script>
+
+</body>
+</html>
