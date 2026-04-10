@@ -221,11 +221,11 @@
 
     .basket {
       position: absolute;
-      left: 22%;
-      bottom: 60px;
-      width: 160px;
-      height: 110px;
-      z-index: 15;
+      left: 18%;
+      bottom: 58px;
+      width: 185px;
+      height: 128px;
+      z-index: 40;
       pointer-events: none;
     }
 
@@ -275,7 +275,7 @@
     }
 
     .mango-btn.correct {
-      animation: fallToGround 0.65s linear forwards;
+      animation: fallStraight 0.7s linear forwards;
       pointer-events: none;
       z-index: 30;
     }
@@ -293,12 +293,14 @@
       100% { transform: translateX(0); }
     }
 
-    @keyframes fallToGround {
+    @keyframes fallStraight {
       0% {
         transform: translateY(0);
+        opacity: 1;
       }
       100% {
-        transform: translateY(var(--fall-y));
+        transform: translateY(260px);
+        opacity: 1;
       }
     }
 
@@ -402,9 +404,9 @@
       }
 
       .basket {
-        left: 19%;
-        width: 145px;
-        height: 100px;
+        left: 16%;
+        width: 170px;
+        height: 118px;
       }
     }
 
@@ -446,10 +448,10 @@
       }
 
       .basket {
-        left: 17%;
+        left: 12%;
         bottom: 72px;
-        width: 130px;
-        height: 92px;
+        width: 150px;
+        height: 105px;
       }
 
       input[type="range"] {
@@ -524,10 +526,10 @@
       }
 
       .basket {
-        left: 13%;
+        left: 8%;
         bottom: 68px;
-        width: 112px;
-        height: 80px;
+        width: 128px;
+        height: 92px;
       }
 
       .volume-box label {
@@ -617,7 +619,6 @@
     const mangoesLayer = document.getElementById('mangoesLayer');
     const basketImage = document.getElementById('basketImage');
     const fallenMangoes = document.getElementById('fallenMangoes');
-    const blanket = document.querySelector('.blanket');
     const questionTitle = document.getElementById('questionTitle');
     const questionText = document.getElementById('questionText');
     const messageEl = document.getElementById('message');
@@ -775,14 +776,24 @@
       progressFill.style.width = `${(currentQuestionIndex / TOTAL_QUESTIONS) * 100}%`;
     }
 
-    function addBlanketMango() {
+    function addBlanketMango(sourceButton) {
+      const containerRect = fallenMangoes.getBoundingClientRect();
+      const buttonRect = sourceButton.getBoundingClientRect();
+
+      const buttonCenterX = buttonRect.left + buttonRect.width / 2;
+      let left = buttonCenterX - containerRect.left - 17;
+
+      const maxLeft = containerRect.width - 34;
+      if (left < 0) left = 0;
+      if (left > maxLeft) left = maxLeft;
+
       const mango = document.createElement('img');
       mango.className = 'fallen-mango';
       mango.src = 'mango.png';
       mango.alt = '';
-      mango.style.left = `${randInt(18, 300)}px`;
+      mango.style.left = `${left}px`;
       mango.style.top = `${randInt(20, 36)}px`;
-      mango.style.transform = `rotate(${randInt(-20, 20)}deg)`;
+      mango.style.transform = `rotate(${randInt(-12, 12)}deg)`;
       fallenMangoes.appendChild(mango);
     }
 
@@ -814,17 +825,6 @@
       });
     }
 
-    function getFallDistance(btn) {
-      const btnRect = btn.getBoundingClientRect();
-      const blanketRect = blanket.getBoundingClientRect();
-      const startY = btnRect.top + btnRect.height / 2;
-      const endY = blanketRect.top + blanketRect.height / 2 - 8;
-
-      return {
-        y: endY - startY
-      };
-    }
-
     function goToNextQuestion() {
       currentQuestionIndex += 1;
 
@@ -844,8 +844,9 @@
       questionTitle.textContent = 'All done!';
       questionText.textContent = 'You helped Simrit find the ripest mangoes.';
       clearMangoes();
-      basketImage.src = 'basket-full.png';
       fallenMangoes.innerHTML = '';
+      basketImage.src = 'basket-full.png';
+      basketImage.style.display = 'block';
       finishCard.classList.add('show');
       finalScoreText.textContent = `Simrit picked ${score} ripe mangoes out of ${TOTAL_QUESTIONS}!`;
     }
@@ -863,8 +864,6 @@
         setMessage('Yay! That is the ripest mango!', 'success');
         playCorrectSound();
 
-        const fall = getFallDistance(button);
-        button.style.setProperty('--fall-y', `${fall.y}px`);
         button.classList.add('correct');
 
         allButtons.forEach(btn => {
@@ -872,7 +871,7 @@
         });
 
         setTimeout(() => {
-          addBlanketMango();
+          addBlanketMango(button);
           goToNextQuestion();
         }, 700);
       } else {
@@ -894,6 +893,7 @@
       score = 0;
       fallenMangoes.innerHTML = '';
       basketImage.src = 'basket.png';
+      basketImage.style.display = 'block';
       finishCard.classList.remove('show');
       setMessage('Click the mango with the biggest number', 'info');
       renderQuestion();
