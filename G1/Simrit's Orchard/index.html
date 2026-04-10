@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simrit's Mango Orchard Game</title>
+  <style>
+    :root {
+      --card: rgba(255,255,255,0.92);
+      --text: #213547;
+      --shadow: 0 10px 30px rgba(0,0,0,0.12);
+      --danger: #d94b4b;
+      --success: #168f4e;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Comic Sans MS", Arial, sans-serif;
+      color: var(--text);
+      background: #e9f6ff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .game-shell {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      background: var(--card);
+      border-radius: 22px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+
+    .title-wrap h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 3.8vw, 2.3rem);
+      color: #dd5c1d;
+    }
+
+    .title-wrap p {
+      margin: 6px 0 0;
+      font-size: 1rem;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .volume-box, .score-box {
+      background: #fff7cf;
+      border-radius: 16px;
+      padding: 10px 12px;
+      font-weight: 700;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.05);
+    }
+
+    .volume-box label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+    }
+
+    input[type="range"] {
+      width: 140px;
+      accent-color: #ff9900;
+    }
+
+    .story-box {
+      background: rgba(255,255,255,0.94);
+      border-radius: 22px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+      border: 4px dashed #ffd166;
+    }
+
+    .story-box p {
+      margin: 0;
+      font-size: clamp(1rem, 2.4vw, 1.1rem);
+      line-height: 1.5;
+    }
+
+    .game-area {
+      position: relative;
+      min-height: 620px;
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 5px solid rgba(255,255,255,0.55);
+      background: url('background.png') center center / cover no-repeat;
+      isolation: isolate;
+    }
+
+    .question-banner {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 20px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      z-index: 20;
+    }
+
+    .question-banner h2 {
+      margin: 0 0 6px;
+      font-size: clamp(1.15rem, 3vw, 1.6rem);
+      color: #d56717;
+    }
+
+    .question-banner p {
+      margin: 0;
+      font-size: clamp(1rem, 2.3vw, 1.1rem);
+    }
+
+    .message {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 108px;
+      width: min(92%, 520px);
+      text-align: center;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.97);
+      box-shadow: var(--shadow);
+      font-size: clamp(1rem, 2.5vw, 1.15rem);
+      font-weight: 700;
+      z-index: 21;
+      min-height: 52px;
+    }
+
+    .message.success { color: var(--success); }
+    .message.error { color: var(--danger); }
+    .message.info { color: #7a5d00; }
+
+    .orchard {
+      position: absolute;
+      inset: 0;
+    }
+
+    .tree-img,
+    .girl-img,
+    .basket-img,
+    .blanket-img,
+    .mango-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .blanket {
+      position: absolute;
+      left: 50%;
+      bottom: 34px;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 120px;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .tree {
+      position: absolute;
+      left: 50%;
+      bottom: 110px;
+      transform: translateX(-50%);
+      width: 340px;
+      height: 360px;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .fallen-mangoes {
+      position: absolute;
+      left: 50%;
+      bottom: 56px;
+      transform: translateX(-50%);
+      width: 240px;
+      height: 70px;
+      z-index: 7;
+      pointer-events: none;
+    }
+
+    .fallen-mango {
+      position: absolute;
+      width: 34px;
+      height: 44px;
+      object-fit: contain;
+    }
+
+    .girl {
+      position: absolute;
+      left: 7%;
+      bottom: 64px;
+      width: 150px;
+      height: 230px;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .basket {
+      position: absolute;
+      left: 19%;
+      bottom: 50px;
+      width: 135px;
+      height: 95px;
+      z-index: 11;
+      pointer-events: none;
+    }
+
+    .mangoes-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 12;
+    }
+
+    .mango-btn {
+      position: absolute;
+      width: 82px;
+      height: 98px;
+      border: none;
+      cursor: pointer;
+      background: transparent;
+      padding: 0;
+      transition: transform 0.2s ease;
+      touch-action: manipulation;
+    }
+
+    .mango-btn:hover,
+    .mango-btn:focus-visible {
+      transform: scale(1.06);
+      outline: none;
+    }
+
+    .mango-img {
+      position: absolute;
+      inset: 0;
+    }
+
+    .mango-number {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #713b00;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.4);
+      padding-top: 8px;
+    }
+
+    .mango-btn.wrong {
+      animation: shake 0.3s ease;
+    }
+
+    .mango-btn.correct {
+      animation: fallToBlanket 1s forwards ease-in;
+      pointer-events: none;
+      z-index: 30;
+    }
+
+    .mango-btn.hidden {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      50% { transform: translateX(4px); }
+      75% { transform: translateX(-4px); }
+      100% { transform: translateX(0); }
+    }
+
+    @keyframes fallToBlanket {
+      0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; }
+      60% { opacity: 1; }
+      100% {
+        transform: translate(var(--fall-x), var(--fall-y)) scale(0.62) rotate(220deg);
+        opacity: 0;
+      }
+    }
+
+    .progress-wrap {
+      margin-top: 14px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 18px;
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .progress-bar {
+      height: 18px;
+      background: #e9ecef;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, #ffb703, #ff7f50);
+      border-radius: 999px;
+      transition: width 0.35s ease;
+    }
+
+    .finish-card {
+      display: none;
+      margin-top: 16px;
+      background: rgba(255,255,255,0.97);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      text-align: center;
+      border: 4px solid #ffd166;
+    }
+
+    .finish-card.show { display: block; }
+
+    .finish-card h3 {
+      margin: 0 0 10px;
+      font-size: clamp(1.4rem, 3.3vw, 2rem);
+      color: #d56717;
+    }
+
+    .finish-card p {
+      margin: 0 0 18px;
+      font-size: 1.08rem;
+      font-weight: 700;
+    }
+
+    .restart-btn {
+      appearance: none;
+      border: none;
+      background: linear-gradient(to bottom, #ff9f1c, #ff7f11);
+      color: white;
+      font-size: 1.05rem;
+      font-weight: 900;
+      padding: 14px 24px;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(255,127,17,0.35);
+      transition: transform 0.2s ease;
+    }
+
+    .restart-btn:hover,
+    .restart-btn:focus-visible {
+      transform: translateY(-2px) scale(1.02);
+      outline: none;
+    }
+
+    @media (max-width: 900px) {
+      .tree {
+        width: 320px;
+        height: 340px;
+        bottom: 118px;
+      }
+      .blanket {
+        width: 270px;
+        height: 108px;
+      }
+      .fallen-mangoes {
+        width: 220px;
+      }
+      .girl {
+        left: 4%;
+        transform: scale(0.9);
+        transform-origin: bottom left;
+      }
+      .basket {
+        left: 17%;
+        transform: scale(0.92);
+        transform-origin: bottom left;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .game-area {
+        min-height: 700px;
+        background-position: center center;
+      }
+      .question-banner {
+        right: 16px;
+      }
+      .message {
+        top: 132px;
+      }
+      .tree {
+        left: 55%;
+        bottom: 170px;
+        width: 280px;
+        height: 310px;
+      }
+      .blanket {
+        left: 56%;
+        bottom: 66px;
+        width: 250px;
+        height: 98px;
+      }
+      .fallen-mangoes {
+        left: 56%;
+        bottom: 84px;
+        width: 200px;
+        height: 60px;
+      }
+      .girl {
+        left: 4%;
+        bottom: 90px;
+        transform: scale(0.78);
+      }
+      .basket {
+        left: 15%;
+        bottom: 70px;
+        transform: scale(0.88);
+      }
+      input[type="range"] { width: 120px; }
+    }
+
+    @media (max-width: 480px) {
+      .game-shell { padding: 10px; }
+      .top-bar, .story-box, .progress-wrap, .finish-card { border-radius: 18px; }
+      .game-area { min-height: 720px; border-radius: 22px; }
+      .question-banner {
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        padding: 12px;
+      }
+      .message {
+        top: 135px;
+        width: calc(100% - 24px);
+        font-size: 0.98rem;
+      }
+      .tree {
+        left: 57%;
+        bottom: 188px;
+        width: 245px;
+        height: 280px;
+      }
+      .blanket {
+        left: 58%;
+        bottom: 78px;
+        width: 220px;
+        height: 88px;
+      }
+      .fallen-mangoes {
+        left: 58%;
+        bottom: 96px;
+        width: 170px;
+        height: 54px;
+      }
+      .mango-btn { width: 68px; height: 85px; }
+      .mango-number { font-size: 1.5rem; }
+      .girl {
+        left: -2%;
+        bottom: 84px;
+        transform: scale(0.66);
+      }
+      .basket {
+        left: 12%;
+        bottom: 64px;
+        width: 120px;
+        height: 85px;
+        transform: none;
+      }
+      .volume-box label {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-shell">
+    <div class="top-bar">
+      <div class="title-wrap">
+        <h1>🥭 Simrit's Mango Orchard</h1>
+        <p>Tap the mango with the <strong>greatest number</strong> to help Simrit pick the ripest one.</p>
+      </div>
+      <div class="controls">
+        <div class="score-box">⭐ Score: <span id="score">0</span></div>
+        <div class="volume-box">
+          <label>
+            🔊 Sound
+            <input id="volumeControl" type="range" min="0" max="100" value="85" />
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="story-box">
+      <p>
+        It is summer, and Simrit is excited because she can eat her favourite fruit — <strong>mangoes</strong>!
+        There is a big mango tree in her orchard, but Simrit does not know how to pick the ripest mango.
+        <strong>Hint:</strong> The mango with the <strong>greatest number</strong> is the ripest.
+        Help Simrit fill her basket with ripe, yellow mangoes!
+      </p>
+    </div>
+
+    <div class="game-area">
+      <div class="question-banner">
+        <h2 id="questionTitle">Question 1 of 10</h2>
+        <p id="questionText">Which mango has the greatest number?</p>
+      </div>
+
+      <div id="message" class="message info">Tap a yellow mango to begin!</div>
+
+      <div class="orchard">
+        <div class="blanket" aria-hidden="true">
+          <img src="blanket.png" class="blanket-img" alt="">
+        </div>
+
+        <div class="tree">
+          <img src="tree.png" class="tree-img" alt="Mango tree">
+        </div>
+
+        <div id="fallenMangoes" class="fallen-mangoes" aria-hidden="true"></div>
+
+        <div class="girl" aria-hidden="true">
+          <img src="girl.png" class="girl-img" alt="">
+        </div>
+
+        <div class="basket" id="basket" aria-hidden="true">
+          <img src="basket.png" class="basket-img" id="basketImage" alt="">
+        </div>
+
+        <div class="mangoes-layer" id="mangoesLayer"></div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span>Progress</span>
+        <span id="progressText">0 / 10 questions completed</span>
+      </div>
+      <div class="progress-bar">
+        <div id="progressFill" class="progress-fill"></div>
+      </div>
+    </div>
+
+    <div id="finishCard" class="finish-card">
+      <h3>🎉 Hooray! Simrit Picked the Ripest Mangoes!</h3>
+      <p id="finalScoreText">Simrit picked 0 ripe mangoes!</p>
+      <button id="restartBtn" class="restart-btn">Play Again</button>
+    </div>
+  </div>
+
+  <script>
+    const TOTAL_QUESTIONS = 10;
+    const mangoesLayer = document.getElementById('mangoesLayer');
+    const basketImage = document.getElementById('basketImage');
+    const fallenMangoes = document.getElementById('fallenMangoes');
+    const blanket = document.querySelector('.blanket');
+    const questionTitle = document.getElementById('questionTitle');
+    const questionText = document.getElementById('questionText');
+    const messageEl = document.getElementById('message');
+    const scoreEl = document.getElementById('score');
+    const progressText = document.getElementById('progressText');
+    const progressFill = document.getElementById('progressFill');
+    const finishCard = document.getElementById('finishCard');
+    const finalScoreText = document.getElementById('finalScoreText');
+    const restartBtn = document.getElementById('restartBtn');
+    const volumeControl = document.getElementById('volumeControl');
+
+    let questions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let canAnswer = true;
+    let audioContext = null;
+    let masterVolume = 0.85;
+
+    const mangoPositions = {
+      desktop: [
+        { left: '34%', top: '30%' },
+        { left: '48%', top: '19%' },
+        { left: '59%', top: '34%' }
+      ],
+      tablet: [
+        { left: '35%', top: '34%' },
+        { left: '49%', top: '24%' },
+        { left: '60%', top: '38%' }
+      ],
+      mobile: [
+        { left: '38%', top: '36%' },
+        { left: '52%', top: '28%' },
+        { left: '61%', top: '41%' }
+      ]
+    };
+
+    function getMangoPositions() {
+      if (window.innerWidth <= 480) return mangoPositions.mobile;
+      if (window.innerWidth <= 700) return mangoPositions.tablet;
+      return mangoPositions.desktop;
+    }
+
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function createQuestion() {
+      const valuesSet = new Set();
+
+      while (valuesSet.size < 3) {
+        valuesSet.add(randInt(0, 99));
+      }
+
+      const values = [...valuesSet];
+      const correct = Math.max(...values);
+
+      return {
+        values: shuffle(values),
+        correct,
+        prompt: 'Which mango has the greatest number?'
+      };
+    }
+
+    function generateQuestions(total = TOTAL_QUESTIONS) {
+      const list = [];
+      const seen = new Set();
+
+      while (list.length < total) {
+        const q = createQuestion();
+        const key = q.values.slice().sort((a, b) => a - b).join('-');
+        if (!seen.has(key)) {
+          seen.add(key);
+          list.push(q);
+        }
+      }
+
+      return shuffle(list);
+    }
+
+    function updateVolume() {
+      masterVolume = Number(volumeControl.value) / 100;
+    }
+
+    volumeControl.addEventListener('input', updateVolume);
+    updateVolume();
+
+    function ensureAudio() {
+      if (!audioContext) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        audioContext = new AudioCtx();
+      }
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+    }
+
+    function playToneSequence(tones) {
+      ensureAudio();
+      const start = audioContext.currentTime;
+
+      tones.forEach((tone) => {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = tone.type || 'sine';
+        osc.frequency.value = tone.freq;
+
+        const segmentStart = start + tone.time;
+        const vol = Math.min(1, masterVolume * (tone.volume ?? 0.9));
+
+        gain.gain.setValueAtTime(0.0001, segmentStart);
+        gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, vol), segmentStart + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, segmentStart + tone.duration);
+
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.start(segmentStart);
+        osc.stop(segmentStart + tone.duration + 0.03);
+      });
+    }
+
+    function playCorrectSound() {
+      playToneSequence([
+        { freq: 523.25, duration: 0.12, time: 0, type: 'triangle', volume: 1 },
+        { freq: 659.25, duration: 0.12, time: 0.13, type: 'triangle', volume: 1 },
+        { freq: 783.99, duration: 0.18, time: 0.27, type: 'triangle', volume: 1 }
+      ]);
+    }
+
+    function playWrongSound() {
+      playToneSequence([
+        { freq: 220, duration: 0.12, time: 0, type: 'sawtooth', volume: 0.95 },
+        { freq: 170, duration: 0.16, time: 0.11, type: 'sawtooth', volume: 0.95 }
+      ]);
+    }
+
+    function setMessage(text, type = 'info') {
+      messageEl.textContent = text;
+      messageEl.className = 'message ' + type;
+    }
+
+    function updateHeader() {
+      questionTitle.textContent = `Question ${currentQuestionIndex + 1} of ${TOTAL_QUESTIONS}`;
+      questionText.textContent = questions[currentQuestionIndex]?.prompt || 'Which mango has the greatest number?';
+      scoreEl.textContent = score;
+      progressText.textContent = `${currentQuestionIndex} / ${TOTAL_QUESTIONS} questions completed`;
+      progressFill.style.width = `${(currentQuestionIndex / TOTAL_QUESTIONS) * 100}%`;
+    }
+
+    function addBlanketMango() {
+      const mango = document.createElement('img');
+      mango.className = 'fallen-mango';
+      mango.src = 'mango.png';
+      mango.alt = '';
+      mango.style.left = `${randInt(0, 180)}px`;
+      mango.style.top = `${randInt(10, 22)}px`;
+      mango.style.transform = `rotate(${randInt(-30, 30)}deg)`;
+      fallenMangoes.appendChild(mango);
+    }
+
+    function clearMangoes() {
+      mangoesLayer.innerHTML = '';
+    }
+
+    function renderQuestion() {
+      clearMangoes();
+      updateHeader();
+      canAnswer = true;
+      const question = questions[currentQuestionIndex];
+      const positions = shuffle(getMangoPositions());
+
+      question.values.forEach((value, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'mango-btn';
+        btn.style.left = positions[index].left;
+        btn.style.top = positions[index].top;
+        btn.setAttribute('aria-label', `Mango number ${value}`);
+
+        btn.innerHTML = `
+          <img src="mango.png" class="mango-img" alt="">
+          <div class="mango-number">${value}</div>
+        `;
+
+        btn.addEventListener('click', () => handleAnswer(btn, value));
+        mangoesLayer.appendChild(btn);
+      });
+    }
+
+    function getFallDistance(btn) {
+      const btnRect = btn.getBoundingClientRect();
+      const blanketRect = blanket.getBoundingClientRect();
+      const startX = btnRect.left + btnRect.width / 2;
+      const startY = btnRect.top + btnRect.height / 2;
+      const endX = blanketRect.left + blanketRect.width / 2;
+      const endY = blanketRect.top + blanketRect.height / 2 - 10;
+      return {
+        x: endX - startX,
+        y: endY - startY
+      };
+    }
+
+    function goToNextQuestion() {
+      currentQuestionIndex += 1;
+
+      if (currentQuestionIndex >= TOTAL_QUESTIONS) {
+        finishGame();
+        return;
+      }
+
+      setMessage('Tap the ripest mango!', 'info');
+      renderQuestion();
+    }
+
+    function finishGame() {
+      updateHeader();
+      progressText.textContent = `${TOTAL_QUESTIONS} / ${TOTAL_QUESTIONS} questions completed`;
+      progressFill.style.width = '100%';
+      setMessage('Great job! Simrit filled her basket!', 'success');
+      questionTitle.textContent = 'All done!';
+      questionText.textContent = 'You helped Simrit find the ripest mangoes.';
+      clearMangoes();
+      basketImage.src = 'basket_full.png';
+      fallenMangoes.innerHTML = '';
+      finishCard.classList.add('show');
+      finalScoreText.textContent = `Simrit picked ${score} ripe mangoes out of ${TOTAL_QUESTIONS}!`;
+    }
+
+    function handleAnswer(button, value) {
+      if (!canAnswer) return;
+      const question = questions[currentQuestionIndex];
+      const allButtons = [...document.querySelectorAll('.mango-btn')];
+
+      if (value === question.correct) {
+        canAnswer = false;
+        score += 1;
+        scoreEl.textContent = score;
+        setMessage('Yay! That is the ripest mango!', 'success');
+        playCorrectSound();
+
+        const fall = getFallDistance(button);
+        button.style.setProperty('--fall-x', `${fall.x}px`);
+        button.style.setProperty('--fall-y', `${fall.y}px`);
+        button.classList.add('correct');
+
+        allButtons.forEach(btn => {
+          if (btn !== button) btn.classList.add('hidden');
+        });
+
+        setTimeout(() => {
+          addBlanketMango();
+          goToNextQuestion();
+        }, 1100);
+      } else {
+        button.classList.add('wrong');
+        playWrongSound();
+        setMessage('This mango is not the ripest. Try again!', 'error');
+
+        setTimeout(() => {
+          button.classList.remove('wrong');
+        }, 300);
+      }
+
+      updateHeader();
+    }
+
+    function restartGame() {
+      questions = generateQuestions(TOTAL_QUESTIONS);
+      currentQuestionIndex = 0;
+      score = 0;
+      fallenMangoes.innerHTML = '';
+      basketImage.src = 'basket.png';
+      finishCard.classList.remove('show');
+      setMessage('Tap a yellow mango to begin!', 'info');
+      renderQuestion();
+      updateHeader();
+    }
+
+    restartBtn.addEventListener('click', restartGame);
+    window.addEventListener('resize', () => {
+      if (questions.length && currentQuestionIndex < TOTAL_QUESTIONS) {
+        renderQuestion();
+      }
+    });
+    document.body.addEventListener('pointerdown', ensureAudio, { once: true });
+    restartGame();
+  </script>
+</body>
+</html>
