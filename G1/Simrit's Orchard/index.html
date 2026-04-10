@@ -172,10 +172,10 @@
     .blanket {
       position: absolute;
       left: 50%;
-      bottom: 24px;
+      bottom: 8px;
       transform: translateX(-50%);
-      width: 420px;
-      height: 140px;
+      width: 430px;
+      height: 138px;
       z-index: 3;
       pointer-events: none;
     }
@@ -183,7 +183,7 @@
     .tree {
       position: absolute;
       left: 50%;
-      bottom: 108px;
+      bottom: 128px;
       transform: translateX(-50%);
       width: 340px;
       height: 360px;
@@ -194,10 +194,10 @@
     .fallen-mangoes {
       position: absolute;
       left: 50%;
-      bottom: 52px;
+      bottom: 34px;
       transform: translateX(-50%);
-      width: 360px;
-      height: 90px;
+      width: 372px;
+      height: 96px;
       z-index: 8;
       pointer-events: none;
     }
@@ -207,6 +207,7 @@
       width: 34px;
       height: 44px;
       object-fit: contain;
+      transition: left 0.26s ease-out, top 0.26s ease-out, transform 0.26s ease-out;
     }
 
     .girl {
@@ -385,16 +386,18 @@
       .tree {
         width: 320px;
         height: 340px;
-        bottom: 116px;
+        bottom: 134px;
       }
 
       .blanket {
-        width: 360px;
-        height: 122px;
+        width: 370px;
+        height: 120px;
+        bottom: 2px;
       }
 
       .fallen-mangoes {
-        width: 300px;
+        width: 310px;
+        bottom: 28px;
       }
 
       .girl {
@@ -422,22 +425,22 @@
 
       .tree {
         left: 55%;
-        bottom: 170px;
+        bottom: 188px;
         width: 280px;
         height: 310px;
       }
 
       .blanket {
         left: 56%;
-        bottom: 60px;
-        width: 330px;
-        height: 115px;
+        bottom: 34px;
+        width: 340px;
+        height: 112px;
       }
 
       .fallen-mangoes {
         left: 56%;
-        bottom: 84px;
-        width: 265px;
+        bottom: 58px;
+        width: 274px;
         height: 72px;
       }
 
@@ -491,22 +494,22 @@
 
       .tree {
         left: 58%;
-        bottom: 190px;
+        bottom: 205px;
         width: 245px;
         height: 280px;
       }
 
       .blanket {
         left: 59%;
-        bottom: 76px;
-        width: 280px;
-        height: 98px;
+        bottom: 46px;
+        width: 286px;
+        height: 94px;
       }
 
       .fallen-mangoes {
         left: 59%;
-        bottom: 98px;
-        width: 220px;
+        bottom: 70px;
+        width: 226px;
         height: 62px;
       }
 
@@ -636,6 +639,7 @@
     let canAnswer = true;
     let audioContext = null;
     let masterVolume = 0.85;
+    let landedMangoes = [];
 
     const mangoPositions = {
       desktop: [
@@ -672,6 +676,10 @@
 
     function randInt(min, max) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
     }
 
     function createQuestion() {
@@ -776,25 +784,68 @@
       progressFill.style.width = `${(currentQuestionIndex / TOTAL_QUESTIONS) * 100}%`;
     }
 
+    function resolveLandingSpot(targetX, width) {
+      const mangoWidth = 34;
+      const minSpacing = 28;
+      const maxLeft = width - mangoWidth;
+
+      let x = clamp(targetX, 0, maxLeft);
+      let moved = true;
+      let tries = 0;
+
+      while (moved && tries < 24) {
+        moved = false;
+
+        for (const landed of landedMangoes) {
+          const dx = x - landed.x;
+          if (Math.abs(dx) < minSpacing) {
+            const push = dx >= 0 ? minSpacing - dx : -(minSpacing + dx);
+            x = clamp(x + push, 0, maxLeft);
+            moved = true;
+          }
+        }
+
+        tries += 1;
+      }
+
+      return x;
+    }
+
     function addBlanketMango(sourceButton) {
       const containerRect = fallenMangoes.getBoundingClientRect();
       const buttonRect = sourceButton.getBoundingClientRect();
 
       const buttonCenterX = buttonRect.left + buttonRect.width / 2;
-      let left = buttonCenterX - containerRect.left - 17;
-
-      const maxLeft = containerRect.width - 34;
-      if (left < 0) left = 0;
-      if (left > maxLeft) left = maxLeft;
+      const targetX = buttonCenterX - containerRect.left - 17;
+      const left = resolveLandingSpot(targetX, containerRect.width);
+      const top = randInt(24, 40);
+      const angle = randInt(-14, 14);
 
       const mango = document.createElement('img');
       mango.className = 'fallen-mango';
       mango.src = 'mango.png';
       mango.alt = '';
       mango.style.left = `${left}px`;
-      mango.style.top = `${randInt(20, 36)}px`;
-      mango.style.transform = `rotate(${randInt(-12, 12)}deg)`;
+      mango.style.top = `${top}px`;
+      mango.style.transform = `rotate(${angle}deg)`;
       fallenMangoes.appendChild(mango);
+
+      landedMangoes.push({ x: left, y: top });
+
+      const rollDirection = left < targetX ? -1 : 1;
+      const rollDistance = clamp(Math.abs(targetX - left), 8, 22);
+
+      requestAnimationFrame(() => {
+        mango.style.left = `${clamp(left + rollDirection * rollDistance, 0, containerRect.width - 34)}px`;
+        mango.style.top = `${top + randInt(-2, 2)}px`;
+        mango.style.transform = `rotate(${angle + rollDirection * randInt(6, 12)}deg)`;
+      });
+
+      setTimeout(() => {
+        const finalLeft = parseFloat(mango.style.left);
+        const finalTop = parseFloat(mango.style.top);
+        landedMangoes[landedMangoes.length - 1] = { x: finalLeft, y: finalTop };
+      }, 280);
     }
 
     function clearMangoes() {
@@ -845,6 +896,7 @@
       questionText.textContent = 'You helped Simrit find the ripest mangoes.';
       clearMangoes();
       fallenMangoes.innerHTML = '';
+      landedMangoes = [];
       basketImage.src = 'basket-full.png';
       basketImage.style.display = 'block';
       finishCard.classList.add('show');
@@ -892,6 +944,7 @@
       currentQuestionIndex = 0;
       score = 0;
       fallenMangoes.innerHTML = '';
+      landedMangoes = [];
       basketImage.src = 'basket.png';
       basketImage.style.display = 'block';
       finishCard.classList.remove('show');
