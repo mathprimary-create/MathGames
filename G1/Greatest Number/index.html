@@ -6,41 +6,42 @@
   <title>Simrit's Mango Orchard Game</title>
   <style>
     :root {
-      --sky1: #87d8ff;
-      --sky2: #dff7ff;
-      --grass: #8bd36c;
-      --leaf: #3fa34d;
-      --leaf-dark: #2d7a38;
-      --brown: #8a5a2b;
+      --sky1: #8ad8ff;
+      --sky2: #ecfbff;
+      --grass1: #93da70;
+      --grass2: #6fbe4c;
+      --leaf1: #4dbb5f;
+      --leaf2: #2e8b46;
+      --trunk1: #9a6434;
+      --trunk2: #74431d;
       --yellow: #ffd84d;
       --yellow-dark: #f1b600;
       --green-mango: #66bb55;
       --basket: #c68642;
       --basket-dark: #8d5a2b;
-      --card: rgba(255,255,255,0.9);
+      --card: rgba(255,255,255,0.93);
       --text: #213547;
-      --shadow: 0 10px 30px rgba(0,0,0,0.12);
+      --shadow: 0 12px 30px rgba(0,0,0,0.12);
       --danger: #d94b4b;
       --success: #168f4e;
-      --accent: #ff7f50;
     }
 
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family: "Trebuchet MS", "Comic Sans MS", Arial, sans-serif;
+      font-family: "Trebuchet MS", Arial, sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.75) 0 50px, transparent 51px),
-        radial-gradient(circle at 80% 15%, rgba(255,255,255,0.7) 0 45px, transparent 46px),
-        linear-gradient(to bottom, var(--sky1), var(--sky2) 55%, #d7f7c8 55%, var(--grass) 100%);
+        radial-gradient(circle at 16% 16%, rgba(255,255,255,0.82) 0 52px, transparent 53px),
+        radial-gradient(circle at 80% 12%, rgba(255,255,255,0.75) 0 42px, transparent 43px),
+        linear-gradient(to bottom, var(--sky1), var(--sky2) 56%, #dff6d3 56%, var(--grass1) 100%);
       min-height: 100vh;
       overflow-x: hidden;
     }
 
     .game-shell {
-      max-width: 980px;
+      max-width: 1080px;
       margin: 0 auto;
       padding: 14px;
     }
@@ -60,8 +61,8 @@
 
     .title-wrap h1 {
       margin: 0;
-      font-size: clamp(1.5rem, 3.8vw, 2.3rem);
-      color: #dd5c1d;
+      font-size: clamp(1.5rem, 3.8vw, 2.25rem);
+      color: #d95e1f;
     }
 
     .title-wrap p {
@@ -97,7 +98,7 @@
     }
 
     .story-box {
-      background: rgba(255,255,255,0.94);
+      background: rgba(255,255,255,0.95);
       border-radius: 22px;
       padding: 16px;
       box-shadow: var(--shadow);
@@ -107,14 +108,14 @@
 
     .story-box p {
       margin: 0;
-      font-size: clamp(1rem, 2.4vw, 1.1rem);
+      font-size: clamp(1rem, 2.4vw, 1.08rem);
       line-height: 1.5;
     }
 
     .game-area {
       position: relative;
-      background: linear-gradient(to bottom, #d7f5ff, #edfff0 55%, #92db6a 55%, #74c14f);
-      min-height: 620px;
+      background: linear-gradient(to bottom, #dbf7ff 0%, #effff5 54%, #92db6a 54%, #70bb4d 100%);
+      min-height: 680px;
       border-radius: 30px;
       box-shadow: var(--shadow);
       overflow: hidden;
@@ -123,21 +124,20 @@
 
     .sun {
       position: absolute;
-      top: 24px;
-      right: 24px;
-      width: 84px;
-      height: 84px;
+      top: 22px;
+      right: 22px;
+      width: 82px;
+      height: 82px;
       border-radius: 50%;
-      background: radial-gradient(circle, #fff7b2 0%, #ffd54a 65%, #ffb300 100%);
+      background: radial-gradient(circle, #fff7b2 0%, #ffd54a 68%, #ffb300 100%);
       box-shadow: 0 0 30px rgba(255, 210, 77, 0.8);
     }
 
     .hill {
       position: absolute;
-      bottom: 120px;
-      background: #82cb60;
+      bottom: 110px;
+      background: #83cb61;
       border-radius: 50%;
-      filter: brightness(0.98);
     }
 
     .hill1 { left: -40px; width: 280px; height: 140px; }
@@ -153,18 +153,18 @@
       border-radius: 20px;
       padding: 14px 16px;
       box-shadow: var(--shadow);
-      z-index: 3;
+      z-index: 5;
     }
 
     .question-banner h2 {
       margin: 0 0 6px;
-      font-size: clamp(1.15rem, 3vw, 1.6rem);
+      font-size: clamp(1.15rem, 3vw, 1.55rem);
       color: #d56717;
     }
 
     .question-banner p {
       margin: 0;
-      font-size: clamp(1rem, 2.3vw, 1.1rem);
+      font-size: clamp(1rem, 2.3vw, 1.08rem);
     }
 
     .message {
@@ -178,9 +178,9 @@
       border-radius: 18px;
       background: rgba(255,255,255,0.97);
       box-shadow: var(--shadow);
-      font-size: clamp(1rem, 2.5vw, 1.15rem);
+      font-size: clamp(1rem, 2.5vw, 1.12rem);
       font-weight: 700;
-      z-index: 4;
+      z-index: 6;
       min-height: 52px;
     }
 
@@ -193,14 +193,23 @@
       inset: 0;
     }
 
+    .orchard-center {
+      position: absolute;
+      left: 50%;
+      bottom: 76px;
+      transform: translateX(-50%);
+      width: min(92vw, 700px);
+      height: 470px;
+      z-index: 2;
+    }
+
     .tree {
       position: absolute;
       left: 50%;
-      bottom: 125px;
+      bottom: 110px;
       transform: translateX(-50%);
-      width: min(70vw, 390px);
-      height: min(72vw, 420px);
-      z-index: 2;
+      width: 420px;
+      height: 340px;
     }
 
     .trunk {
@@ -208,65 +217,126 @@
       bottom: 0;
       left: 50%;
       transform: translateX(-50%);
-      width: 88px;
-      height: 220px;
-      background: linear-gradient(to right, #7c471f, #9c6631, #7b481f);
-      border-radius: 30px;
-      box-shadow: inset -8px 0 0 rgba(0,0,0,0.1);
+      width: 95px;
+      height: 180px;
+      background: linear-gradient(to right, var(--trunk2), var(--trunk1), var(--trunk2));
+      border-radius: 28px;
+      box-shadow: inset -8px 0 0 rgba(0,0,0,0.12);
     }
 
-    .canopy {
+    .branch {
       position: absolute;
-      top: 34px;
+      background: var(--trunk2);
+      border-radius: 16px;
+      transform-origin: center bottom;
+    }
+
+    .branch.left {
+      width: 110px;
+      height: 18px;
+      left: 118px;
+      bottom: 122px;
+      transform: rotate(-28deg);
+    }
+
+    .branch.right {
+      width: 110px;
+      height: 18px;
+      right: 118px;
+      bottom: 126px;
+      transform: rotate(28deg);
+    }
+
+    .canopy-main,
+    .canopy-left,
+    .canopy-right,
+    .canopy-top {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #6ed27c 0%, var(--leaf1) 45%, var(--leaf2) 100%);
+      box-shadow: inset -10px -10px 0 rgba(0,0,0,0.08);
+    }
+
+    .canopy-main {
+      width: 250px;
+      height: 190px;
       left: 50%;
+      top: 68px;
       transform: translateX(-50%);
-      width: 320px;
-      height: 240px;
-      background: radial-gradient(circle at 40% 35%, #57c266 0 30%, #3fa34d 31% 60%, #2d7a38 61% 100%);
-      border-radius: 48% 52% 50% 50%;
-      box-shadow:
-        -110px 38px 0 10px #3fa34d,
-        110px 40px 0 10px #3fa34d,
-        -65px -25px 0 15px #57c266,
-        70px -24px 0 15px #57c266;
+    }
+
+    .canopy-left {
+      width: 170px;
+      height: 150px;
+      left: 64px;
+      top: 104px;
+    }
+
+    .canopy-right {
+      width: 170px;
+      height: 150px;
+      right: 64px;
+      top: 104px;
+    }
+
+    .canopy-top {
+      width: 180px;
+      height: 140px;
+      left: 50%;
+      top: 18px;
+      transform: translateX(-50%);
+    }
+
+    .ground-shadow {
+      position: absolute;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      width: 340px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.12);
+      filter: blur(8px);
     }
 
     .girl {
       position: absolute;
-      left: 7%;
-      bottom: 110px;
-      width: 150px;
-      height: 230px;
+      left: 18px;
+      bottom: 12px;
+      width: 145px;
+      height: 220px;
       z-index: 2;
     }
 
     .girl .head {
-      width: 68px;
-      height: 68px;
+      width: 66px;
+      height: 66px;
       background: #ffd9b3;
       border-radius: 50%;
       position: absolute;
       left: 40px;
       top: 0;
       border: 3px solid rgba(0,0,0,0.08);
+      z-index: 2;
     }
 
     .girl .hair {
       width: 78px;
-      height: 50px;
+      height: 48px;
       background: #3e2520;
-      border-radius: 50px 50px 25px 25px;
+      border-radius: 50px 50px 24px 24px;
       position: absolute;
-      left: 35px;
-      top: -6px;
+      left: 34px;
+      top: -4px;
+      z-index: 3;
     }
 
     .girl .body {
       position: absolute;
       top: 62px;
       left: 28px;
-      width: 95px;
-      height: 95px;
+      width: 92px;
+      height: 92px;
       background: #ff7ab6;
       border-radius: 22px 22px 18px 18px;
     }
@@ -277,28 +347,38 @@
       border-radius: 20px;
     }
 
-    .girl .arm.left { width: 18px; height: 75px; top: 74px; left: 15px; transform: rotate(25deg); }
-    .girl .arm.right { width: 18px; height: 82px; top: 74px; right: 12px; transform: rotate(-18deg); }
-    .girl .leg.left { width: 20px; height: 90px; top: 150px; left: 46px; }
-    .girl .leg.right { width: 20px; height: 90px; top: 150px; left: 82px; }
-    .girl .shoe { position: absolute; width: 36px; height: 16px; background: #5c2e91; border-radius: 20px; bottom: 0; }
-    .girl .shoe.left { left: 38px; }
-    .girl .shoe.right { left: 76px; }
+    .girl .arm.left { width: 17px; height: 70px; top: 74px; left: 16px; transform: rotate(22deg); }
+    .girl .arm.right { width: 17px; height: 78px; top: 74px; right: 13px; transform: rotate(-16deg); }
+    .girl .leg.left { width: 18px; height: 82px; top: 145px; left: 47px; }
+    .girl .leg.right { width: 18px; height: 82px; top: 145px; left: 81px; }
+
+    .girl .shoe {
+      position: absolute;
+      width: 32px;
+      height: 15px;
+      background: #5c2e91;
+      border-radius: 20px;
+      bottom: 0;
+    }
+
+    .girl .shoe.left { left: 40px; }
+    .girl .shoe.right { left: 74px; }
 
     .basket {
       position: absolute;
-      right: 8%;
-      bottom: 82px;
-      width: 170px;
-      height: 96px;
-      z-index: 3;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 180px;
+      height: 105px;
+      z-index: 4;
     }
 
     .basket .rim {
       position: absolute;
-      bottom: 58px;
-      left: 10px;
-      width: 150px;
+      bottom: 60px;
+      left: 12px;
+      width: 156px;
       height: 18px;
       background: #d99952;
       border-radius: 18px;
@@ -309,8 +389,8 @@
       position: absolute;
       bottom: 0;
       left: 0;
-      width: 170px;
-      height: 75px;
+      width: 180px;
+      height: 78px;
       background: linear-gradient(to bottom, #dca15b, #b26e31);
       clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
       border: 4px solid var(--basket-dark);
@@ -320,9 +400,9 @@
 
     .basket .handle {
       position: absolute;
-      left: 35px;
-      bottom: 56px;
-      width: 100px;
+      left: 38px;
+      bottom: 58px;
+      width: 104px;
       height: 56px;
       border: 8px solid var(--basket-dark);
       border-bottom: none;
@@ -332,10 +412,10 @@
 
     .basket-fruits {
       position: absolute;
-      left: 20px;
+      left: 23px;
       bottom: 18px;
-      width: 130px;
-      height: 55px;
+      width: 135px;
+      height: 56px;
       pointer-events: none;
     }
 
@@ -520,121 +600,139 @@
       outline: none;
     }
 
-    #confettiCanvas {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 999;
-    }
-
     @media (max-width: 900px) {
+      .orchard-center {
+        width: min(96vw, 620px);
+        height: 460px;
+      }
+
       .tree {
-        width: 320px;
-        height: 390px;
+        width: 350px;
+        height: 310px;
       }
-      .canopy {
-        width: 250px;
-        height: 205px;
-        box-shadow:
-          -85px 32px 0 8px #3fa34d,
-          85px 32px 0 8px #3fa34d,
-          -55px -18px 0 11px #57c266,
-          55px -18px 0 11px #57c266;
-      }
-      .girl {
-        left: 3%;
-        transform: scale(0.9);
-        transform-origin: bottom left;
-      }
-      .basket {
-        right: 3%;
-        transform: scale(0.9);
-        transform-origin: bottom right;
-      }
+
+      .canopy-main { width: 220px; height: 175px; }
+      .canopy-left, .canopy-right { width: 150px; height: 134px; top: 104px; }
+      .canopy-top { width: 160px; height: 125px; }
       .question-banner { right: 110px; }
     }
 
     @media (max-width: 700px) {
-      .game-area {
-        min-height: 700px;
-      }
+      .game-area { min-height: 760px; }
+
       .question-banner {
         right: 16px;
       }
+
       .message {
         top: 132px;
       }
+
+      .orchard-center {
+        bottom: 68px;
+        width: min(98vw, 500px);
+        height: 520px;
+      }
+
       .tree {
-        left: 54%;
-        bottom: 175px;
-        width: 280px;
-        height: 350px;
+        width: 290px;
+        height: 290px;
+        bottom: 145px;
       }
-      .canopy {
-        width: 220px;
-        height: 188px;
+
+      .trunk {
+        width: 78px;
+        height: 150px;
       }
-      .girl {
-        left: 4%;
-        bottom: 116px;
-        transform: scale(0.78);
-      }
+
+      .branch.left { width: 86px; left: 84px; bottom: 106px; }
+      .branch.right { width: 86px; right: 84px; bottom: 110px; }
+
+      .canopy-main { width: 186px; height: 152px; top: 78px; }
+      .canopy-left { width: 126px; height: 118px; left: 36px; top: 108px; }
+      .canopy-right { width: 126px; height: 118px; right: 36px; top: 108px; }
+      .canopy-top { width: 138px; height: 110px; top: 30px; }
+
       .basket {
-        left: 50%;
-        right: auto;
-        bottom: 70px;
-        transform: translateX(-50%) scale(0.95);
+        bottom: 34px;
       }
-      .hill1 { bottom: 165px; }
-      .hill2 { bottom: 150px; }
-      .hill3 { bottom: 162px; }
+
+      .girl {
+        left: 10px;
+        bottom: 18px;
+        transform: scale(0.82);
+        transform-origin: bottom left;
+      }
+
+      .hill1 { bottom: 145px; }
+      .hill2 { bottom: 145px; }
+      .hill3 { bottom: 145px; }
+
       input[type="range"] { width: 120px; }
     }
 
     @media (max-width: 480px) {
       .game-shell { padding: 10px; }
       .top-bar, .story-box, .progress-wrap, .finish-card { border-radius: 18px; }
-      .game-area { min-height: 720px; border-radius: 22px; }
+      .game-area { min-height: 760px; border-radius: 22px; }
       .sun { width: 62px; height: 62px; top: 16px; right: 16px; }
+
       .question-banner {
         top: 12px;
         left: 12px;
         right: 12px;
         padding: 12px;
       }
+
       .message {
-        top: 135px;
+        top: 138px;
         width: calc(100% - 24px);
         font-size: 0.98rem;
       }
+
+      .orchard-center {
+        height: 520px;
+        bottom: 58px;
+      }
+
       .tree {
-        left: 55%;
         width: 245px;
-        height: 320px;
+        height: 260px;
+        bottom: 160px;
       }
-      .trunk { width: 70px; height: 185px; }
-      .canopy {
-        width: 180px;
-        height: 165px;
-        box-shadow:
-          -64px 24px 0 7px #3fa34d,
-          64px 24px 0 7px #3fa34d,
-          -40px -14px 0 8px #57c266,
-          40px -14px 0 8px #57c266;
+
+      .trunk {
+        width: 68px;
+        height: 135px;
       }
+
+      .branch.left { width: 74px; left: 67px; bottom: 93px; }
+      .branch.right { width: 74px; right: 67px; bottom: 97px; }
+
+      .canopy-main { width: 158px; height: 132px; top: 78px; }
+      .canopy-left { width: 104px; height: 96px; left: 28px; top: 105px; }
+      .canopy-right { width: 104px; height: 96px; right: 28px; top: 105px; }
+      .canopy-top { width: 116px; height: 92px; top: 36px; }
+
       .mango-btn { width: 68px; height: 85px; }
       .mango-number { font-size: 1.5rem; }
-      .girl {
-        left: -2%;
-        transform: scale(0.66);
-      }
+
       .basket {
-        width: 150px;
+        width: 154px;
+        height: 95px;
+        bottom: 50px;
       }
-      .basket .rim { width: 130px; }
-      .basket .body { width: 150px; }
-      .basket .handle { width: 88px; left: 31px; }
-      .basket-fruits { width: 118px; left: 16px; }
+
+      .basket .rim { width: 132px; left: 11px; }
+      .basket .body { width: 154px; height: 70px; }
+      .basket .handle { width: 90px; left: 32px; }
+      .basket-fruits { width: 116px; left: 18px; }
+
+      .girl {
+        left: -4px;
+        transform: scale(0.68);
+      }
+
       .volume-box label {
         flex-direction: column;
         align-items: flex-start;
@@ -643,14 +741,13 @@
   </style>
 </head>
 <body>
-  <canvas id="confettiCanvas"></canvas>
-
   <div class="game-shell">
     <div class="top-bar">
       <div class="title-wrap">
         <h1>🥭 Simrit's Mango Orchard</h1>
         <p>Tap the mango with the <strong>greatest number</strong> to help Simrit pick the ripest one.</p>
       </div>
+
       <div class="controls">
         <div class="score-box">⭐ Score: <span id="score">0</span></div>
         <div class="volume-box">
@@ -685,31 +782,40 @@
       <div id="message" class="message info">Tap a yellow mango to begin!</div>
 
       <div class="orchard">
-        <div class="tree">
-          <div class="canopy"></div>
-          <div class="trunk"></div>
-        </div>
+        <div class="orchard-center">
+          <div class="tree">
+            <div class="canopy-top"></div>
+            <div class="canopy-left"></div>
+            <div class="canopy-right"></div>
+            <div class="canopy-main"></div>
+            <div class="branch left"></div>
+            <div class="branch right"></div>
+            <div class="trunk"></div>
+          </div>
 
-        <div class="girl" aria-hidden="true">
-          <div class="hair"></div>
-          <div class="head"></div>
-          <div class="body"></div>
-          <div class="arm left"></div>
-          <div class="arm right"></div>
-          <div class="leg left"></div>
-          <div class="leg right"></div>
-          <div class="shoe left"></div>
-          <div class="shoe right"></div>
-        </div>
+          <div class="ground-shadow"></div>
 
-        <div class="basket" id="basket" aria-hidden="true">
-          <div class="handle"></div>
-          <div class="rim"></div>
-          <div class="body"></div>
-          <div class="basket-fruits" id="basketFruits"></div>
-        </div>
+          <div class="girl" aria-hidden="true">
+            <div class="hair"></div>
+            <div class="head"></div>
+            <div class="body"></div>
+            <div class="arm left"></div>
+            <div class="arm right"></div>
+            <div class="leg left"></div>
+            <div class="leg right"></div>
+            <div class="shoe left"></div>
+            <div class="shoe right"></div>
+          </div>
 
-        <div class="mangoes-layer" id="mangoesLayer"></div>
+          <div class="basket" id="basket" aria-hidden="true">
+            <div class="handle"></div>
+            <div class="rim"></div>
+            <div class="body"></div>
+            <div class="basket-fruits" id="basketFruits"></div>
+          </div>
+
+          <div class="mangoes-layer" id="mangoesLayer"></div>
+        </div>
       </div>
     </div>
 
@@ -745,8 +851,6 @@
     const finalScoreText = document.getElementById('finalScoreText');
     const restartBtn = document.getElementById('restartBtn');
     const volumeControl = document.getElementById('volumeControl');
-    const confettiCanvas = document.getElementById('confettiCanvas');
-    const ctx = confettiCanvas.getContext('2d');
 
     let questions = [];
     let currentQuestionIndex = 0;
@@ -754,22 +858,12 @@
     let canAnswer = true;
     let audioContext = null;
     let masterVolume = 0.85;
-    let confettiPieces = [];
-    let confettiAnimating = false;
 
     const mangoPositions = [
-      { left: '31%', top: '29%' },
-      { left: '52%', top: '19%' },
-      { left: '64%', top: '40%' }
+      { left: '26%', top: '20%' },
+      { left: '45%', top: '7%' },
+      { left: '62%', top: '24%' }
     ];
-
-    function resizeCanvas() {
-      confettiCanvas.width = window.innerWidth;
-      confettiCanvas.height = window.innerHeight;
-    }
-
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
 
     function shuffle(array) {
       const arr = [...array];
@@ -784,24 +878,20 @@
       return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    function createQuestion() {
-      const correct = randInt(0, 99);
-      const offsets = new Set();
-
-      while (offsets.size < 2) {
-        const diff = randInt(1, 25);
-        offsets.add(diff);
+    function createUniqueValues() {
+      const values = new Set();
+      while (values.size < 3) {
+        values.add(randInt(0, 99));
       }
+      return [...values];
+    }
 
-      const wrongs = [...offsets].map(diff => {
-        let value = correct - diff;
-        if (value < 0) value = randInt(0, Math.max(0, correct - 1));
-        return value;
-      });
+    function createQuestion() {
+      const values = createUniqueValues();
+      const correct = Math.max(...values);
 
-      const values = shuffle([correct, ...wrongs]);
       return {
-        values,
+        values: shuffle(values),
         correct,
         prompt: 'Which mango has the greatest number?'
       };
@@ -814,6 +904,7 @@
       while (list.length < total) {
         const q = createQuestion();
         const key = q.values.slice().sort((a, b) => a - b).join('-');
+
         if (!seen.has(key)) {
           seen.add(key);
           list.push(q);
@@ -835,6 +926,7 @@
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         audioContext = new AudioCtx();
       }
+
       if (audioContext.state === 'suspended') {
         audioContext.resume();
       }
@@ -844,9 +936,10 @@
       ensureAudio();
       const start = audioContext.currentTime;
 
-      tones.forEach((tone, index) => {
+      tones.forEach((tone) => {
         const osc = audioContext.createOscillator();
         const gain = audioContext.createGain();
+
         osc.type = tone.type || 'sine';
         osc.frequency.value = tone.freq;
 
@@ -895,8 +988,8 @@
     function addBasketMango() {
       const mango = document.createElement('div');
       mango.className = 'basket-mango';
-      mango.style.left = `${randInt(0, 95)}px`;
-      mango.style.top = `${randInt(8, 20)}px`;
+      mango.style.left = `${randInt(0, 100)}px`;
+      mango.style.top = `${randInt(8, 18)}px`;
       mango.style.transform = `rotate(${randInt(-25, 25)}deg)`;
       basketFruits.appendChild(mango);
     }
@@ -909,6 +1002,7 @@
       clearMangoes();
       updateHeader();
       canAnswer = true;
+
       const question = questions[currentQuestionIndex];
       const positions = shuffle(mangoPositions);
 
@@ -928,8 +1022,8 @@
 
         btn.appendChild(shape);
         btn.appendChild(number);
-
         btn.addEventListener('click', () => handleAnswer(btn, value));
+
         mangoesLayer.appendChild(btn);
       });
     }
@@ -937,65 +1031,16 @@
     function getFallDistance(btn) {
       const btnRect = btn.getBoundingClientRect();
       const basketRect = basket.getBoundingClientRect();
+
       const startX = btnRect.left + btnRect.width / 2;
       const startY = btnRect.top + btnRect.height / 2;
       const endX = basketRect.left + basketRect.width / 2;
       const endY = basketRect.top + basketRect.height / 2;
+
       return {
         x: endX - startX,
         y: endY - startY
       };
-    }
-
-    function throwConfetti(count = 70) {
-      resizeCanvas();
-      const colors = ['#ff595e', '#ffca3a', '#8ac926', '#1982c4', '#6a4c93', '#ff924c'];
-
-      for (let i = 0; i < count; i++) {
-        confettiPieces.push({
-          x: Math.random() * confettiCanvas.width,
-          y: -20 - Math.random() * confettiCanvas.height * 0.3,
-          w: 6 + Math.random() * 8,
-          h: 8 + Math.random() * 12,
-          speedY: 2 + Math.random() * 5,
-          speedX: -2 + Math.random() * 4,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          rotation: Math.random() * Math.PI,
-          rotationSpeed: -0.2 + Math.random() * 0.4,
-          alpha: 0.9 + Math.random() * 0.1
-        });
-      }
-
-      if (!confettiAnimating) animateConfetti();
-    }
-
-    function animateConfetti() {
-      confettiAnimating = true;
-      ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-
-      confettiPieces.forEach(piece => {
-        piece.x += piece.speedX;
-        piece.y += piece.speedY;
-        piece.rotation += piece.rotationSpeed;
-        piece.speedY += 0.03;
-
-        ctx.save();
-        ctx.globalAlpha = piece.alpha;
-        ctx.translate(piece.x, piece.y);
-        ctx.rotate(piece.rotation);
-        ctx.fillStyle = piece.color;
-        ctx.fillRect(-piece.w / 2, -piece.h / 2, piece.w, piece.h);
-        ctx.restore();
-      });
-
-      confettiPieces = confettiPieces.filter(piece => piece.y < confettiCanvas.height + 40);
-
-      if (confettiPieces.length > 0) {
-        requestAnimationFrame(animateConfetti);
-      } else {
-        confettiAnimating = false;
-        ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-      }
     }
 
     function goToNextQuestion() {
@@ -1020,13 +1065,11 @@
       clearMangoes();
       finishCard.classList.add('show');
       finalScoreText.textContent = `Simrit picked ${score} ripe mangoes out of ${TOTAL_QUESTIONS}!`;
-      if (score === TOTAL_QUESTIONS) {
-        throwConfetti(140);
-      }
     }
 
     function handleAnswer(button, value) {
       if (!canAnswer) return;
+
       const question = questions[currentQuestionIndex];
       const allButtons = [...document.querySelectorAll('.mango-btn')];
 
@@ -1036,7 +1079,6 @@
         scoreEl.textContent = score;
         setMessage('Yay! That is the ripest mango!', 'success');
         playCorrectSound();
-        throwConfetti(65);
 
         const fall = getFallDistance(button);
         button.style.setProperty('--fall-x', `${fall.x}px`);
@@ -1054,11 +1096,9 @@
       } else {
         if (!button.classList.contains('wrong')) {
           button.classList.add('wrong');
-          playWrongSound();
-        } else {
-          playWrongSound();
         }
 
+        playWrongSound();
         setMessage('This mango is not the ripest. Try again!', 'error');
       }
 
