@@ -9,14 +9,8 @@
       --sky1: #87d8ff;
       --sky2: #dff7ff;
       --grass: #8bd36c;
-      --leaf: #3fa34d;
-      --leaf-dark: #2d7a38;
-      --brown: #8a5a2b;
       --yellow: #ffd84d;
       --yellow-dark: #f1b600;
-      --green-mango: #66bb55;
-      --basket: #c68642;
-      --basket-dark: #8d5a2b;
       --card: rgba(255,255,255,0.9);
       --text: #213547;
       --shadow: 0 10px 30px rgba(0,0,0,0.12);
@@ -193,42 +187,24 @@
       inset: 0;
     }
 
+    .tree-img,
+    .girl-img,
+    .basket-img,
+    .mango-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
     .tree {
       position: absolute;
       left: 50%;
-      bottom: 125px;
+      bottom: 140px;
       transform: translateX(-50%);
-      width: min(70vw, 390px);
-      height: min(72vw, 420px);
+      width: 340px;
+      height: 340px;
       z-index: 2;
-    }
-
-    .trunk {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 88px;
-      height: 220px;
-      background: linear-gradient(to right, #7c471f, #9c6631, #7b481f);
-      border-radius: 30px;
-      box-shadow: inset -8px 0 0 rgba(0,0,0,0.1);
-    }
-
-    .canopy {
-      position: absolute;
-      top: 34px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 320px;
-      height: 240px;
-      background: radial-gradient(circle at 40% 35%, #57c266 0 30%, #3fa34d 31% 60%, #2d7a38 61% 100%);
-      border-radius: 48% 52% 50% 50%;
-      box-shadow:
-        -110px 38px 0 10px #3fa34d,
-        110px 40px 0 10px #3fa34d,
-        -65px -25px 0 15px #57c266,
-        70px -24px 0 15px #57c266;
     }
 
     .girl {
@@ -240,94 +216,14 @@
       z-index: 2;
     }
 
-    .girl .head {
-      width: 68px;
-      height: 68px;
-      background: #ffd9b3;
-      border-radius: 50%;
-      position: absolute;
-      left: 40px;
-      top: 0;
-      border: 3px solid rgba(0,0,0,0.08);
-    }
-
-    .girl .hair {
-      width: 78px;
-      height: 50px;
-      background: #3e2520;
-      border-radius: 50px 50px 25px 25px;
-      position: absolute;
-      left: 35px;
-      top: -6px;
-    }
-
-    .girl .body {
-      position: absolute;
-      top: 62px;
-      left: 28px;
-      width: 95px;
-      height: 95px;
-      background: #ff7ab6;
-      border-radius: 22px 22px 18px 18px;
-    }
-
-    .girl .arm, .girl .leg {
-      position: absolute;
-      background: #ffd9b3;
-      border-radius: 20px;
-    }
-
-    .girl .arm.left { width: 18px; height: 75px; top: 74px; left: 15px; transform: rotate(25deg); }
-    .girl .arm.right { width: 18px; height: 82px; top: 74px; right: 12px; transform: rotate(-18deg); }
-    .girl .leg.left { width: 20px; height: 90px; top: 150px; left: 46px; }
-    .girl .leg.right { width: 20px; height: 90px; top: 150px; left: 82px; }
-    .girl .shoe { position: absolute; width: 36px; height: 16px; background: #5c2e91; border-radius: 20px; bottom: 0; }
-    .girl .shoe.left { left: 38px; }
-    .girl .shoe.right { left: 76px; }
-
     .basket {
       position: absolute;
-      right: 8%;
-      bottom: 82px;
-      width: 170px;
-      height: 96px;
+      left: 50%;
+      bottom: 60px;
+      transform: translateX(-50%);
+      width: 180px;
+      height: 120px;
       z-index: 3;
-    }
-
-    .basket .rim {
-      position: absolute;
-      bottom: 58px;
-      left: 10px;
-      width: 150px;
-      height: 18px;
-      background: #d99952;
-      border-radius: 18px;
-      border: 3px solid var(--basket-dark);
-    }
-
-    .basket .body {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 170px;
-      height: 75px;
-      background: linear-gradient(to bottom, #dca15b, #b26e31);
-      clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
-      border: 4px solid var(--basket-dark);
-      border-top: none;
-      border-radius: 0 0 18px 18px;
-    }
-
-    .basket .handle {
-      position: absolute;
-      left: 35px;
-      bottom: 56px;
-      width: 100px;
-      height: 56px;
-      border: 8px solid var(--basket-dark);
-      border-bottom: none;
-      border-radius: 80px 80px 0 0;
-      opacity: 0.85;
     }
 
     .basket-fruits {
@@ -343,11 +239,7 @@
       position: absolute;
       width: 28px;
       height: 38px;
-      background: linear-gradient(145deg, #ffe669, #f7bd00);
-      border-radius: 50% 45% 55% 50% / 42% 50% 50% 58%;
-      border: 2px solid rgba(0,0,0,0.08);
-      transform: rotate(22deg);
-      box-shadow: 0 2px 0 rgba(0,0,0,0.07);
+      object-fit: contain;
     }
 
     .mangoes-layer {
@@ -374,37 +266,9 @@
       outline: none;
     }
 
-    .mango-shape {
+    .mango-img {
       position: absolute;
-      inset: 8px 12px 18px;
-      background: linear-gradient(145deg, #fff191 0%, var(--yellow) 48%, var(--yellow-dark) 100%);
-      border-radius: 52% 44% 54% 47% / 36% 42% 58% 64%;
-      box-shadow: inset -10px -8px 0 rgba(220,150,0,0.16);
-      border: 3px solid rgba(0,0,0,0.08);
-    }
-
-    .mango-shape::before {
-      content: "";
-      position: absolute;
-      top: -12px;
-      left: 50%;
-      width: 4px;
-      height: 18px;
-      background: #7f521f;
-      transform: translateX(-50%) rotate(12deg);
-      border-radius: 4px;
-    }
-
-    .mango-shape::after {
-      content: "";
-      position: absolute;
-      top: -8px;
-      left: calc(50% + 5px);
-      width: 18px;
-      height: 10px;
-      background: #48a95c;
-      border-radius: 50% 0 50% 50%;
-      transform: rotate(-14deg);
+      inset: 0;
     }
 
     .mango-number {
@@ -419,8 +283,8 @@
       padding-top: 8px;
     }
 
-    .mango-btn.wrong .mango-shape {
-      background: linear-gradient(145deg, #95e37d 0%, var(--green-mango) 55%, #389b42 100%);
+    .mango-btn.wrong {
+      animation: shake 0.3s ease;
     }
 
     .mango-btn.correct {
@@ -432,6 +296,14 @@
     .mango-btn.hidden {
       visibility: hidden;
       pointer-events: none;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      50% { transform: translateX(4px); }
+      75% { transform: translateX(-4px); }
+      100% { transform: translateX(0); }
     }
 
     @keyframes fallToBasket {
@@ -520,26 +392,10 @@
       outline: none;
     }
 
-    #confettiCanvas {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 999;
-    }
-
     @media (max-width: 900px) {
       .tree {
         width: 320px;
         height: 390px;
-      }
-      .canopy {
-        width: 250px;
-        height: 205px;
-        box-shadow:
-          -85px 32px 0 8px #3fa34d,
-          85px 32px 0 8px #3fa34d,
-          -55px -18px 0 11px #57c266,
-          55px -18px 0 11px #57c266;
       }
       .girl {
         left: 3%;
@@ -547,9 +403,10 @@
         transform-origin: bottom left;
       }
       .basket {
-        right: 3%;
-        transform: scale(0.9);
-        transform-origin: bottom right;
+        left: 50%;
+        bottom: 60px;
+        transform: translateX(-50%) scale(0.9);
+        transform-origin: bottom center;
       }
       .question-banner { right: 110px; }
     }
@@ -569,10 +426,6 @@
         bottom: 175px;
         width: 280px;
         height: 350px;
-      }
-      .canopy {
-        width: 220px;
-        height: 188px;
       }
       .girl {
         left: 4%;
@@ -612,16 +465,6 @@
         width: 245px;
         height: 320px;
       }
-      .trunk { width: 70px; height: 185px; }
-      .canopy {
-        width: 180px;
-        height: 165px;
-        box-shadow:
-          -64px 24px 0 7px #3fa34d,
-          64px 24px 0 7px #3fa34d,
-          -40px -14px 0 8px #57c266,
-          40px -14px 0 8px #57c266;
-      }
       .mango-btn { width: 68px; height: 85px; }
       .mango-number { font-size: 1.5rem; }
       .girl {
@@ -629,11 +472,12 @@
         transform: scale(0.66);
       }
       .basket {
+        left: 50%;
+        bottom: 55px;
         width: 150px;
+        height: 100px;
+        transform: translateX(-50%);
       }
-      .basket .rim { width: 130px; }
-      .basket .body { width: 150px; }
-      .basket .handle { width: 88px; left: 31px; }
       .basket-fruits { width: 118px; left: 16px; }
       .volume-box label {
         flex-direction: column;
@@ -643,8 +487,6 @@
   </style>
 </head>
 <body>
-  <canvas id="confettiCanvas"></canvas>
-
   <div class="game-shell">
     <div class="top-bar">
       <div class="title-wrap">
@@ -685,26 +527,16 @@
       <div id="message" class="message info">Tap a yellow mango to begin!</div>
 
       <div class="orchard">
-     <div class="tree">
-  <img src="tree.png" class="tree-img">
-</div>
+        <div class="tree">
+          <img src="tree.png" class="tree-img" alt="Mango tree">
+        </div>
 
         <div class="girl" aria-hidden="true">
-          <div class="hair"></div>
-          <div class="head"></div>
-          <div class="body"></div>
-          <div class="arm left"></div>
-          <div class="arm right"></div>
-          <div class="leg left"></div>
-          <div class="leg right"></div>
-          <div class="shoe left"></div>
-          <div class="shoe right"></div>
+          <img src="girl.png" class="girl-img" alt="">
         </div>
 
         <div class="basket" id="basket" aria-hidden="true">
-          <div class="handle"></div>
-          <div class="rim"></div>
-          <div class="body"></div>
+          <img src="basket.png" class="basket-img" alt="">
           <div class="basket-fruits" id="basketFruits"></div>
         </div>
 
@@ -744,8 +576,6 @@
     const finalScoreText = document.getElementById('finalScoreText');
     const restartBtn = document.getElementById('restartBtn');
     const volumeControl = document.getElementById('volumeControl');
-    const confettiCanvas = document.getElementById('confettiCanvas');
-    const ctx = confettiCanvas.getContext('2d');
 
     let questions = [];
     let currentQuestionIndex = 0;
@@ -753,22 +583,12 @@
     let canAnswer = true;
     let audioContext = null;
     let masterVolume = 0.85;
-    let confettiPieces = [];
-    let confettiAnimating = false;
 
     const mangoPositions = [
       { left: '31%', top: '29%' },
       { left: '52%', top: '19%' },
       { left: '64%', top: '40%' }
     ];
-
-    function resizeCanvas() {
-      confettiCanvas.width = window.innerWidth;
-      confettiCanvas.height = window.innerHeight;
-    }
-
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
 
     function shuffle(array) {
       const arr = [...array];
@@ -784,23 +604,17 @@
     }
 
     function createQuestion() {
-      const correct = randInt(0, 99);
-      const offsets = new Set();
+      const valuesSet = new Set();
 
-      while (offsets.size < 2) {
-        const diff = randInt(1, 25);
-        offsets.add(diff);
+      while (valuesSet.size < 3) {
+        valuesSet.add(randInt(0, 99));
       }
 
-      const wrongs = [...offsets].map(diff => {
-        let value = correct - diff;
-        if (value < 0) value = randInt(0, Math.max(0, correct - 1));
-        return value;
-      });
+      const values = [...valuesSet];
+      const correct = Math.max(...values);
 
-      const values = shuffle([correct, ...wrongs]);
       return {
-        values,
+        values: shuffle(values),
         correct,
         prompt: 'Which mango has the greatest number?'
       };
@@ -843,7 +657,7 @@
       ensureAudio();
       const start = audioContext.currentTime;
 
-      tones.forEach((tone, index) => {
+      tones.forEach((tone) => {
         const osc = audioContext.createOscillator();
         const gain = audioContext.createGain();
         osc.type = tone.type || 'sine';
@@ -892,8 +706,10 @@
     }
 
     function addBasketMango() {
-      const mango = document.createElement('div');
+      const mango = document.createElement('img');
       mango.className = 'basket-mango';
+      mango.src = 'mango.png';
+      mango.alt = '';
       mango.style.left = `${randInt(0, 95)}px`;
       mango.style.top = `${randInt(8, 20)}px`;
       mango.style.transform = `rotate(${randInt(-25, 25)}deg)`;
@@ -918,15 +734,10 @@
         btn.style.top = positions[index].top;
         btn.setAttribute('aria-label', `Mango number ${value}`);
 
-        const shape = document.createElement('div');
-        shape.className = 'mango-shape';
-
-        const number = document.createElement('div');
-        number.className = 'mango-number';
-        number.textContent = value;
-
-        btn.appendChild(shape);
-        btn.appendChild(number);
+        btn.innerHTML = `
+          <img src="mango.png" class="mango-img" alt="">
+          <div class="mango-number">${value}</div>
+        `;
 
         btn.addEventListener('click', () => handleAnswer(btn, value));
         mangoesLayer.appendChild(btn);
@@ -944,57 +755,6 @@
         x: endX - startX,
         y: endY - startY
       };
-    }
-
-    function throwConfetti(count = 70) {
-      resizeCanvas();
-      const colors = ['#ff595e', '#ffca3a', '#8ac926', '#1982c4', '#6a4c93', '#ff924c'];
-
-      for (let i = 0; i < count; i++) {
-        confettiPieces.push({
-          x: Math.random() * confettiCanvas.width,
-          y: -20 - Math.random() * confettiCanvas.height * 0.3,
-          w: 6 + Math.random() * 8,
-          h: 8 + Math.random() * 12,
-          speedY: 2 + Math.random() * 5,
-          speedX: -2 + Math.random() * 4,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          rotation: Math.random() * Math.PI,
-          rotationSpeed: -0.2 + Math.random() * 0.4,
-          alpha: 0.9 + Math.random() * 0.1
-        });
-      }
-
-      if (!confettiAnimating) animateConfetti();
-    }
-
-    function animateConfetti() {
-      confettiAnimating = true;
-      ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-
-      confettiPieces.forEach(piece => {
-        piece.x += piece.speedX;
-        piece.y += piece.speedY;
-        piece.rotation += piece.rotationSpeed;
-        piece.speedY += 0.03;
-
-        ctx.save();
-        ctx.globalAlpha = piece.alpha;
-        ctx.translate(piece.x, piece.y);
-        ctx.rotate(piece.rotation);
-        ctx.fillStyle = piece.color;
-        ctx.fillRect(-piece.w / 2, -piece.h / 2, piece.w, piece.h);
-        ctx.restore();
-      });
-
-      confettiPieces = confettiPieces.filter(piece => piece.y < confettiCanvas.height + 40);
-
-      if (confettiPieces.length > 0) {
-        requestAnimationFrame(animateConfetti);
-      } else {
-        confettiAnimating = false;
-        ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-      }
     }
 
     function goToNextQuestion() {
@@ -1019,9 +779,6 @@
       clearMangoes();
       finishCard.classList.add('show');
       finalScoreText.textContent = `Simrit picked ${score} ripe mangoes out of ${TOTAL_QUESTIONS}!`;
-      if (score === TOTAL_QUESTIONS) {
-        throwConfetti(140);
-      }
     }
 
     function handleAnswer(button, value) {
@@ -1035,7 +792,6 @@
         scoreEl.textContent = score;
         setMessage('Yay! That is the ripest mango!', 'success');
         playCorrectSound();
-        throwConfetti(65);
 
         const fall = getFallDistance(button);
         button.style.setProperty('--fall-x', `${fall.x}px`);
@@ -1051,14 +807,13 @@
           goToNextQuestion();
         }, 1100);
       } else {
-        if (!button.classList.contains('wrong')) {
-          button.classList.add('wrong');
-          playWrongSound();
-        } else {
-          playWrongSound();
-        }
-
+        button.classList.add('wrong');
+        playWrongSound();
         setMessage('This mango is not the ripest. Try again!', 'error');
+
+        setTimeout(() => {
+          button.classList.remove('wrong');
+        }, 300);
       }
 
       updateHeader();
@@ -1081,5 +836,3 @@
   </script>
 </body>
 </html>
-
-
