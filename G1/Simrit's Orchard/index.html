@@ -461,21 +461,21 @@
 
       .tree {
         left: 58%;
-        bottom: 190px;
-        width: 245px;
-        height: 280px;
+        bottom: 175px;
+        width: 285px;
+        height: 320px;
       }
 
       .blanket {
         left: 58%;
-        bottom: 82px;
+        bottom: 105px;
         width: 320px;
         height: 108px;
       }
 
       .fallen-mangoes {
         left: 58%;
-        bottom: 102px;
+        bottom: 120px;
         width: 250px;
         height: 74px;
       }
@@ -595,9 +595,9 @@
         { left: '60%', top: '38%' }
       ],
       mobile: [
-        { left: '41%', top: '39%' },
-        { left: '52%', top: '33%' },
-        { left: '60%', top: '43%' }
+        { left: 35, top: 38 },
+        { left: 52, top: 30 },
+        { left: 66, top: 42 }
       ]
     };
 
@@ -622,6 +622,14 @@
 
     function clamp(value, min, max) {
       return Math.min(max, Math.max(min, value));
+    }
+
+    function jitterPosition(pos) {
+      const jitter = (val, range) => val + (Math.random() * range * 2 - range);
+      return {
+        left: jitter(pos.left, 3),
+        top: jitter(pos.top, 3)
+      };
     }
 
     function createQuestion() {
@@ -741,13 +749,23 @@
       updateHeader();
       canAnswer = true;
       const question = questions[currentQuestionIndex];
-      const positions = shuffle(getMangoPositions());
+      const basePositions = shuffle(getMangoPositions());
+      const positions = window.innerWidth <= 480
+        ? basePositions.map(p => jitterPosition(p))
+        : basePositions;
 
       question.values.forEach((value, index) => {
         const btn = document.createElement('button');
         btn.className = 'mango-btn';
-        btn.style.left = positions[index].left;
-        btn.style.top = positions[index].top;
+
+        if (window.innerWidth <= 480) {
+          btn.style.left = positions[index].left + '%';
+          btn.style.top = positions[index].top + '%';
+        } else {
+          btn.style.left = positions[index].left;
+          btn.style.top = positions[index].top;
+        }
+
         btn.setAttribute('aria-label', `Mango number ${value}`);
 
         btn.innerHTML = `
