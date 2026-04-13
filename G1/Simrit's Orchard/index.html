@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simrit's Mango Orchard Game</title>
+  <title>Rani's Mango Orchard</title>
   <style>
     :root {
       --card: rgba(255,255,255,0.92);
@@ -28,6 +28,45 @@
       max-width: 980px;
       margin: 0 auto;
       padding: 14px;
+    }
+
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      background: var(--card);
+      border-radius: 22px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+
+    .title-wrap h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 3.8vw, 2.3rem);
+      color: #dd5c1d;
+    }
+
+    .title-wrap p {
+      margin: 6px 0 0;
+      font-size: 1rem;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .score-box {
+      background: #fff7cf;
+      border-radius: 16px;
+      padding: 10px 12px;
+      font-weight: 700;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.05);
     }
 
     .story-box {
@@ -60,7 +99,7 @@
       position: absolute;
       top: 16px;
       left: 16px;
-      right: 130px;
+      right: 16px;
       background: rgba(255,255,255,0.95);
       border-radius: 20px;
       padding: 14px 16px;
@@ -77,19 +116,6 @@
     .question-banner p {
       margin: 0;
       font-size: clamp(1rem, 2.3vw, 1.1rem);
-    }
-
-    .score-badge {
-      position: absolute;
-      top: 18px;
-      right: 20px;
-      background: rgba(255, 247, 207, 0.95);
-      padding: 10px 14px;
-      border-radius: 18px;
-      font-weight: 900;
-      font-size: 1.1rem;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-      z-index: 25;
     }
 
     .message {
@@ -200,8 +226,8 @@
 
     .mango-btn {
       position: absolute;
-      width: 82px;
-      height: 98px;
+      width: 72px;
+      height: 88px;
       border: none;
       cursor: pointer;
       background: transparent;
@@ -226,7 +252,7 @@
       inset: 0;
       display: grid;
       place-items: center;
-      font-size: 1.8rem;
+      font-size: 1.55rem;
       font-weight: 900;
       color: #713b00;
       text-shadow: 1px 1px 0 rgba(255,255,255,0.4);
@@ -373,21 +399,21 @@
         width: 170px;
         height: 118px;
       }
+
+      .mango-btn {
+        width: 68px;
+        height: 84px;
+      }
+
+      .mango-number {
+        font-size: 1.45rem;
+      }
     }
 
     @media (max-width: 700px) {
       .game-area {
         min-height: 700px;
         background-position: center center;
-      }
-
-      .question-banner {
-        right: 16px;
-      }
-
-      .score-badge {
-        top: 84px;
-        right: 16px;
       }
 
       .message {
@@ -427,6 +453,15 @@
         width: 150px;
         height: 105px;
       }
+
+      .mango-btn {
+        width: 64px;
+        height: 80px;
+      }
+
+      .mango-number {
+        font-size: 1.35rem;
+      }
     }
 
     @media (max-width: 480px) {
@@ -434,6 +469,7 @@
         padding: 10px;
       }
 
+      .top-bar,
       .story-box,
       .progress-wrap,
       .finish-card {
@@ -450,13 +486,6 @@
         left: 12px;
         right: 12px;
         padding: 12px;
-      }
-
-      .score-badge {
-        top: 88px;
-        right: 12px;
-        font-size: 1rem;
-        padding: 8px 12px;
       }
 
       .message {
@@ -487,12 +516,12 @@
       }
 
       .mango-btn {
-        width: 68px;
-        height: 85px;
+        width: 58px;
+        height: 74px;
       }
 
       .mango-number {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
       }
 
       .girl {
@@ -512,12 +541,22 @@
 </head>
 <body>
   <div class="game-shell">
+    <div class="top-bar">
+      <div class="title-wrap">
+        <h1>🥭 Rani's Mango Orchard</h1>
+        <p>Click the mango with the <strong>biggest number</strong> to help Rani pick the ripest one.</p>
+      </div>
+      <div class="controls">
+        <div class="score-box">⭐ Score: <span id="score">0</span></div>
+      </div>
+    </div>
+
     <div class="story-box">
       <p>
-        It is summer, and Simrit is excited because she can eat her favourite fruit — <strong>mangoes</strong>!
-        There is a big mango tree in her orchard, but Simrit does not know how to pick the ripest mango.
+        It is summer, and Rani is excited because she can eat her favourite fruit — <strong>mangoes</strong>!
+        There is a big mango tree in her orchard, but Rani does not know how to pick the ripest mango.
         <strong>Hint:</strong> The mango with the <strong>biggest number</strong> is the ripest.
-        Help Simrit fill her basket with ripe, yellow mangoes!
+        Help Rani fill her basket with ripe, yellow mangoes!
       </p>
     </div>
 
@@ -525,10 +564,6 @@
       <div class="question-banner">
         <h2 id="questionTitle">Question 1 of 10</h2>
         <p id="questionText">Click the mango with the biggest number</p>
-      </div>
-
-      <div class="score-badge">
-        ⭐ <span id="score">0</span>
       </div>
 
       <div id="message" class="message info">Click the mango with the biggest number</div>
@@ -567,12 +602,10 @@
     </div>
 
     <div id="finishCard" class="finish-card">
-      <h3>🎉 Hooray! Simrit Picked the Ripest Mangoes!</h3>
-      <p id="finalScoreText">Simrit picked 0 ripe mangoes!</p>
+      <h3>🎉 Hooray! Rani Picked the Ripest Mangoes!</h3>
+      <p id="finalScoreText">Rani picked 0 ripe mangoes!</p>
       <button id="restartBtn" class="restart-btn">Play Again</button>
     </div>
-
-    <input id="volumeControl" type="range" min="0" max="100" value="85" style="display:none;">
   </div>
 
   <script>
@@ -589,14 +622,11 @@
     const finishCard = document.getElementById('finishCard');
     const finalScoreText = document.getElementById('finalScoreText');
     const restartBtn = document.getElementById('restartBtn');
-    const volumeControl = document.getElementById('volumeControl');
 
     let questions = [];
     let currentQuestionIndex = 0;
     let score = 0;
     let canAnswer = true;
-    let audioContext = null;
-    let masterVolume = 0.85;
     let landedMangoes = [];
 
     const mangoPositions = {
@@ -671,62 +701,6 @@
       }
 
       return shuffle(list);
-    }
-
-    function updateVolume() {
-      masterVolume = Number(volumeControl.value) / 100;
-    }
-
-    volumeControl.addEventListener('input', updateVolume);
-    updateVolume();
-
-    function ensureAudio() {
-      if (!audioContext) {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        audioContext = new AudioCtx();
-      }
-      if (audioContext.state === 'suspended') {
-        audioContext.resume();
-      }
-    }
-
-    function playToneSequence(tones) {
-      ensureAudio();
-      const start = audioContext.currentTime;
-
-      tones.forEach((tone) => {
-        const osc = audioContext.createOscillator();
-        const gain = audioContext.createGain();
-        osc.type = tone.type || 'sine';
-        osc.frequency.value = tone.freq;
-
-        const segmentStart = start + tone.time;
-        const vol = Math.min(1, masterVolume * (tone.volume ?? 0.9));
-
-        gain.gain.setValueAtTime(0.0001, segmentStart);
-        gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, vol), segmentStart + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, segmentStart + tone.duration);
-
-        osc.connect(gain);
-        gain.connect(audioContext.destination);
-        osc.start(segmentStart);
-        osc.stop(segmentStart + tone.duration + 0.03);
-      });
-    }
-
-    function playCorrectSound() {
-      playToneSequence([
-        { freq: 523.25, duration: 0.12, time: 0, type: 'triangle', volume: 1 },
-        { freq: 659.25, duration: 0.12, time: 0.13, type: 'triangle', volume: 1 },
-        { freq: 783.99, duration: 0.18, time: 0.27, type: 'triangle', volume: 1 }
-      ]);
-    }
-
-    function playWrongSound() {
-      playToneSequence([
-        { freq: 220, duration: 0.12, time: 0, type: 'sawtooth', volume: 0.95 },
-        { freq: 170, duration: 0.16, time: 0.11, type: 'sawtooth', volume: 0.95 }
-      ]);
     }
 
     function setMessage(text, type = 'info') {
@@ -849,16 +823,16 @@
     function finishGame() {
       progressText.textContent = `${TOTAL_QUESTIONS} / ${TOTAL_QUESTIONS} questions completed`;
       progressFill.style.width = '100%';
-      setMessage('Great job! Simrit filled her basket!', 'success');
+      setMessage('Great job! Rani filled her basket!', 'success');
       questionTitle.textContent = 'All done!';
-      questionText.textContent = 'You helped Simrit find the ripest mangoes.';
+      questionText.textContent = 'You helped Rani find the ripest mangoes.';
       clearMangoes();
       fallenMangoes.innerHTML = '';
       landedMangoes = [];
       basketImage.src = 'basket-full.png';
       basketImage.style.display = 'block';
       finishCard.classList.add('show');
-      finalScoreText.textContent = `Simrit picked ${score} ripe mangoes out of ${TOTAL_QUESTIONS}!`;
+      finalScoreText.textContent = `Rani picked ${score} ripe mangoes out of ${TOTAL_QUESTIONS}!`;
     }
 
     function handleAnswer(button, value) {
@@ -872,7 +846,6 @@
         score += 1;
         scoreEl.textContent = score;
         setMessage('Yay! That is the ripest mango!', 'success');
-        playCorrectSound();
 
         button.classList.add('correct');
 
@@ -886,7 +859,6 @@
         }, 700);
       } else {
         button.classList.add('wrong');
-        playWrongSound();
         setMessage('This mango is not the ripest. Try again!', 'error');
 
         setTimeout(() => {
@@ -919,7 +891,6 @@
       }
     });
 
-    document.body.addEventListener('pointerdown', ensureAudio, { once: true });
     restartGame();
   </script>
 </body>
