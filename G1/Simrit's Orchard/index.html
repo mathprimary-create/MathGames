@@ -30,35 +30,24 @@
       padding: 14px;
     }
 
+    .main-title {
+      margin: 0 0 12px;
+      text-align: center;
+      font-size: clamp(2rem, 5vw, 3rem);
+      color: #dd5c1d;
+      line-height: 1.1;
+    }
+
     .top-bar {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 12px;
+      justify-content: center;
       align-items: center;
+      gap: 12px;
       background: var(--card);
       border-radius: 22px;
       padding: 14px 16px;
       box-shadow: var(--shadow);
       margin-bottom: 14px;
-    }
-
-    .title-wrap h1 {
-      margin: 0;
-      font-size: clamp(1.5rem, 3.8vw, 2.3rem);
-      color: #dd5c1d;
-    }
-
-    .title-wrap p {
-      margin: 6px 0 0;
-      font-size: 1rem;
-    }
-
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
     }
 
     .score-box {
@@ -82,6 +71,7 @@
       margin: 0;
       font-size: clamp(1rem, 2.4vw, 1.1rem);
       line-height: 1.5;
+      text-align: center;
     }
 
     .game-area {
@@ -95,34 +85,11 @@
       isolation: isolate;
     }
 
-    .question-banner {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      right: 16px;
-      background: rgba(255,255,255,0.95);
-      border-radius: 20px;
-      padding: 14px 16px;
-      box-shadow: var(--shadow);
-      z-index: 20;
-    }
-
-    .question-banner h2 {
-      margin: 0 0 6px;
-      font-size: clamp(1.15rem, 3vw, 1.6rem);
-      color: #d56717;
-    }
-
-    .question-banner p {
-      margin: 0;
-      font-size: clamp(1rem, 2.3vw, 1.1rem);
-    }
-
     .message {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      top: 108px;
+      top: 20px;
       width: min(92%, 540px);
       text-align: center;
       padding: 12px 14px;
@@ -417,7 +384,7 @@
       }
 
       .message {
-        top: 132px;
+        top: 22px;
       }
 
       .tree {
@@ -469,6 +436,10 @@
         padding: 10px;
       }
 
+      .main-title {
+        margin-bottom: 10px;
+      }
+
       .top-bar,
       .story-box,
       .progress-wrap,
@@ -481,15 +452,8 @@
         border-radius: 22px;
       }
 
-      .question-banner {
-        top: 12px;
-        left: 12px;
-        right: 12px;
-        padding: 12px;
-      }
-
       .message {
-        top: 135px;
+        top: 16px;
         width: calc(100% - 24px);
         font-size: 0.98rem;
       }
@@ -541,32 +505,22 @@
 </head>
 <body>
   <div class="game-shell">
+    <h1 class="main-title">🥭 Rani's Mango Orchard</h1>
+
     <div class="top-bar">
-      <div class="title-wrap">
-        <h1>🥭 Rani's Mango Orchard</h1>
-        <p>Click the mango with the <strong>biggest number</strong> to help Rani pick the ripest one.</p>
-      </div>
-      <div class="controls">
-        <div class="score-box">⭐ Score: <span id="score">0</span></div>
-      </div>
+      <div class="score-box">⭐ Score: <span id="score">0</span></div>
     </div>
 
     <div class="story-box">
       <p>
         It is summer, and Rani is excited because she can eat her favourite fruit — <strong>mangoes</strong>!
-        There is a big mango tree in her orchard, but Rani does not know how to pick the ripest mango.
-        <strong>Hint:</strong> The mango with the <strong>biggest number</strong> is the ripest.
+        The mango with the <strong>biggest number</strong> is the ripest.
         Help Rani fill her basket with ripe, yellow mangoes!
       </p>
     </div>
 
     <div class="game-area">
-      <div class="question-banner">
-        <h2 id="questionTitle">Question 1 of 10</h2>
-        <p id="questionText">Click the mango with the biggest number</p>
-      </div>
-
-      <div id="message" class="message info">Click the mango with the biggest number</div>
+      <div id="message" class="message info">Tap the biggest number</div>
 
       <div class="orchard">
         <div class="blanket" aria-hidden="true">
@@ -613,8 +567,6 @@
     const mangoesLayer = document.getElementById('mangoesLayer');
     const basketImage = document.getElementById('basketImage');
     const fallenMangoes = document.getElementById('fallenMangoes');
-    const questionTitle = document.getElementById('questionTitle');
-    const questionText = document.getElementById('questionText');
     const messageEl = document.getElementById('message');
     const scoreEl = document.getElementById('score');
     const progressText = document.getElementById('progressText');
@@ -683,7 +635,7 @@
       return {
         values: shuffle(values),
         correct,
-        prompt: 'Click the mango with the biggest number'
+        prompt: 'Tap the biggest number'
       };
     }
 
@@ -709,8 +661,6 @@
     }
 
     function updateHeader() {
-      questionTitle.textContent = `Question ${currentQuestionIndex + 1} of ${TOTAL_QUESTIONS}`;
-      questionText.textContent = questions[currentQuestionIndex]?.prompt || 'Click the mango with the biggest number';
       scoreEl.textContent = score;
       progressText.textContent = `${currentQuestionIndex} / ${TOTAL_QUESTIONS} questions completed`;
       progressFill.style.width = `${(currentQuestionIndex / TOTAL_QUESTIONS) * 100}%`;
@@ -816,7 +766,7 @@
         return;
       }
 
-      setMessage('Click the mango with the biggest number', 'info');
+      setMessage('Tap the biggest number', 'info');
       renderQuestion();
     }
 
@@ -824,8 +774,6 @@
       progressText.textContent = `${TOTAL_QUESTIONS} / ${TOTAL_QUESTIONS} questions completed`;
       progressFill.style.width = '100%';
       setMessage('Great job! Rani filled her basket!', 'success');
-      questionTitle.textContent = 'All done!';
-      questionText.textContent = 'You helped Rani find the ripest mangoes.';
       clearMangoes();
       fallenMangoes.innerHTML = '';
       landedMangoes = [];
@@ -878,7 +826,7 @@
       basketImage.src = 'basket.png';
       basketImage.style.display = 'block';
       finishCard.classList.remove('show');
-      setMessage('Click the mango with the biggest number', 'info');
+      setMessage('Tap the biggest number', 'info');
       renderQuestion();
       updateHeader();
     }
