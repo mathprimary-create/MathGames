@@ -1,1 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G1 Measurement Game</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #ffe5e5, #fff1cc);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  #game-container {
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    position: relative;
+  }
+  #logo-slide, #end-slide {
+    display: none;
+  }
+  #question-slide {
+    display: none;
+  }
+  .option {
+    background-color: #fff;
+    border: 2px solid #cfa;
+    border-radius: 10px;
+    padding: 15px 25px;
+    margin: 10px;
+    display: inline-block;
+    cursor: pointer;
+    font-size: 1.2em;
+    transition: transform 0.2s;
+  }
+  .option:hover {
+    transform: scale(1.05);
+  }
+  .correct {
+    border-color: green;
+    background-color: #cfc;
+  }
+  .wrong {
+    border-color: red;
+    background-color: #fcc;
+    animation: jiggle 0.3s;
+  }
+  @keyframes jiggle {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+  }
+  #confetti-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+  }
+  #instruction {
+    background-color: #ffd;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+  #play-again-btn {
+    padding: 12px 25px;
+    font-size: 1.2em;
+    border-radius: 12px;
+    border: none;
+    background-color: #ffcc66;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+<div id="game-container">
 
+  <!-- Slide 1: Logo -->
+  <div id="logo-slide">
+    <img src="logo.png" alt="Innovine Logo" style="width:200px;">
+  </div>
+
+  <!-- Question Slide -->
+  <div id="question-slide">
+    <div id="instruction"></div>
+    <div id="options-container"></div>
+  </div>
+
+  <!-- End Slide -->
+  <div id="end-slide">
+    <h2>🎉 Well Done! 🎉</h2>
+    <button id="play-again-btn">Play Again</button>
+  </div>
+
+</div>
+
+<audio id="correct-sound" src="correct.mp3"></audio>
+<audio id="wrong-sound" src="wrong.mp3"></audio>
+<audio id="applause-sound" src="freesound_community-claps-44774.mp3"></audio>
+
+<canvas id="confetti-canvas"></canvas>
+
+<script>
+// --- Game Data ---
+const rounds = [
+  { instruction: "Which is the longest object?", options: ["Pencil", "Eraser", "Crayon"], answer: 0 },
+  { instruction: "Which object is 4 paper clips long?", options: ["Ruler", "Pencil", "Book"], answer: 1 },
+  { instruction: "Which is heavier?", options: ["Apple", "Book"], answer: 1 },
+  { instruction: "How many blocks weigh the object?", options: ["3", "5", "2"], answer: 0 },
+  { instruction: "Which container can hold more water?", options: ["Bottle", "Bowl"], answer: 0 },
+  { instruction: "How many cups fill the bottle?", options: ["2", "3", "4"], answer: 2 }
+];
+
+let currentRound = -1;
+let attempt = 0;
+
+// --- Elements ---
+const logoSlide = document.getElementById("logo-slide");
+const questionSlide = document.getElementById("question-slide");
+const endSlide = document.getElementById("end-slide");
+const instructionEl = document.getElementById("instruction");
+const optionsContainer = document.getElementById("options-container");
+const correctSound = document.getElementById("correct-sound");
+const wrongSound = document.getElementById("wrong-sound");
+const applauseSound = document.getElementById("applause-sound");
+const playAgainBtn = document.getElementById("play-again-btn");
+const confettiCanvas = document.getElementById("confetti-canvas");
+
+// --- Game Flow ---
+function startGame() {
+  logoSlide.style.display = "block";
+  questionSlide.style.display = "none";
+  endSlide.style.display = "none";
+  currentRound = -1;
+  attempt = 0;
+  setTimeout(nextRound, 3000);
+}
+
+function nextRound() {
+  currentRound++;
+  attempt = 0;
+  if(currentRound >= rounds.length) {
+    showEndSlide();
+    return;
+  }
+  showQuestion(rounds[currentRound]);
+}
+
+function showQuestion(round) {
+  logoSlide.style.display = "none";
+  questionSlide.style.display = "block";
+  endSlide.style.display = "none";
+  instructionEl.textContent = round.instruction;
+  optionsContainer.innerHTML = "";
+  round.options.forEach((opt, idx) => {
+    const btn = document.createElement("div");
+    btn.classList.add("option");
+    btn.textContent = opt;
+    btn.addEventListener("click", () => handleAnswer(idx));
+    optionsContainer.appendChild(btn);
+  });
+}
+
+function handleAnswer(selectedIdx) {
+  const round = rounds[currentRound];
+  const buttons = optionsContainer.children;
+  if(selectedIdx === round.answer) {
+    buttons[selectedIdx].classList.add("correct");
+    correctSound.play();
+    setTimeout(nextRound, 1000);
+  } else {
+    buttons[selectedIdx].classList.add("wrong");
+    wrongSound.play();
+    attempt++;
+    if(attempt >= 2) {
+      buttons[round.answer].classList.add("correct");
+      setTimeout(nextRound, 1500);
+    }
+  }
+}
+
+function showEndSlide() {
+  questionSlide.style.display = "none";
+  endSlide.style.display = "block";
+  applauseSound.play();
+  launchConfetti();
+}
+
+// --- Play Again ---
+playAgainBtn.addEventListener("click", () => {
+  clearConfetti();
+  startGame();
+});
+
+// --- Confetti ---
+let confettiCtx = confettiCanvas.getContext('2d');
+confettiCanvas.width = window.innerWidth;
+confettiCanvas.height = window.innerHeight;
+let confettiPieces = [];
+function launchConfetti() {
+  confettiPieces = [];
+  for(let i=0;i<150;i++){
+    confettiPieces.push({x:Math.random()*confettiCanvas.width, y:Math.random()*confettiCanvas.height, r:Math.random()*6+2, d:Math.random()*20, color:`hsl(${Math.random()*360},100%,50%)`, tilt:Math.random()*10-10});
+  }
+  requestAnimationFrame(drawConfetti);
+}
+function drawConfetti() {
+  confettiCtx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
+  confettiPieces.forEach(p=>{
+    confettiCtx.beginPath();
+    confettiCtx.lineWidth = p.r/2;
+    confettiCtx.strokeStyle = p.color;
+    confettiCtx.moveTo(p.x+p.tilt+ p.r/4, p.y);
+    confettiCtx.lineTo(p.x+p.tilt, p.y+p.r);
+    confettiCtx.stroke();
+    p.y += Math.cos(0.1+p.d)*2+1;
+    p.x += Math.sin(0.05)*2;
+    if(p.y > confettiCanvas.height){p.y=0;p.x=Math.random()*confettiCanvas.width;}
+  });
+  if(endSlide.style.display==="block") requestAnimationFrame(drawConfetti);
+}
+function clearConfetti() {
+  confettiCtx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
+}
+
+window.onload = startGame;
+</script>
+</body>
+</html>
