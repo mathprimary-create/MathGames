@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nova's Space Rescue – Big Numbers</title>
+<title>Nova's Space Rescue – Addition up to 9999</title>
 <style>
 body {
     margin: 0;
     font-family: 'Arbutus', cursive;
-    background: url('assets/background.png') center/cover no-repeat;
+    background: url('assets/moon-bg.png') center/cover no-repeat;
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    color: #333;
     overflow: hidden;
+    color: #333;
 }
 #splash, #game, #endScreen {
     width: 100%;
@@ -24,73 +24,30 @@ body {
     align-items: center;
     justify-content: center;
 }
-#splash img {
-    width: 200px;
-    height: auto;
-}
-h1, h2 {
-    text-align: center;
-    color: #4b2e83;
-}
-#questionBox {
-    font-size: 2em;
-    margin: 10px;
-    text-align: center;
-}
-#aliens {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 20px;
-    position: relative;
-}
-.alien {
-    width: 100px;
-    height: 100px;
-    background-color: #ffcc00;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2em;
-    cursor: pointer;
-    position: relative;
-    user-select: none;
-    transition: transform 0.3s;
-}
-.alien:hover { transform: scale(1.1); }
+#splash img { width: 200px; height: auto; }
+h1, h2 { text-align: center; color: #4b2e83; }
+#questionBox { font-size: 1.8em; margin: 10px; text-align: center; }
+#aliens { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px; position: relative; }
+.alien { width: 100px; height: 100px; cursor: pointer; user-select: none; position: relative; }
+#scoreBoard, #levelDisplay, #crystalMeter { font-size: 1.2em; margin: 5px; }
+#crystalMeter span { font-size: 1.5em; }
+#playAgainBtn { padding: 10px 20px; font-size: 1.5em; background-color: #4b2e83; color: white; border: none; border-radius: 10px; cursor: pointer; margin-top: 20px; }
+#playAgainBtn:hover { background-color: #6a4cb0; }
 .wiggle { animation: wiggle 0.5s; }
 @keyframes wiggle {
-    0% { transform: rotate(0deg); }
-    25% { transform: rotate(15deg); }
-    50% { transform: rotate(-15deg); }
-    75% { transform: rotate(10deg); }
-    100% { transform: rotate(0deg); }
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(15deg); }
+  50% { transform: rotate(-15deg); }
+  75% { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
 }
-#scoreBoard, #levelDisplay, #crystalMeter {
-    font-size: 1.2em;
-    margin: 5px;
-}
-#crystalMeter span { font-size: 1.5em; }
-#playAgainBtn {
-    padding: 10px 20px;
-    font-size: 1.5em;
-    background-color: #4b2e83;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-top: 20px;
-}
-#playAgainBtn:hover { background-color: #6a4cb0; }
 </style>
 </head>
 <body>
 
 <!-- Splash Screen -->
 <div id="splash">
-    <img src="assets/innovine-logo.png" alt="Innovine Logo">
+    <img src="assets/logo.png" alt="Innovine Logo">
 </div>
 
 <!-- Game Screen -->
@@ -111,129 +68,105 @@ h1, h2 {
 
 <audio id="correctSound" src="assets/correct.mp3"></audio>
 <audio id="wrongSound" src="assets/wrong.mp3"></audio>
+<audio id="clapSound" src="assets/freesound_community-claps-44774.mp3"></audio>
 
 <script>
-// 15 fixed big-number addition questions
+// Questions: 15 large-number sums up to 9999
 const questions = [
-    {q: "4578 + 622 = ?", options:[5198,5200,5190,5202], answer:5198},
-    {q: "3200 + 178 = ?", options:[3378,3380,3385,3365], answer:3378},
-    {q: "4444 + 555 = ?", options:[4999,5000,4998,5001], answer:4999},
-    {q: "3000 + 678 = ?", options:[3678,3680,3670,3668], answer:3678},
-    {q: "1500 + 799 = ?", options:[2299,2298,2297,2300], answer:2299},
-
-    {q: "2345 + 765 = ?", options:[3110,3111,3112,3100], answer:3110},
-    {q: "4000 + 1234 = ?", options:[5234,5230,5235,5240], answer:5234},
-    {q: "678 + 321 = ?", options:[999,1000,1001,998], answer:999},
-    {q: "2000 + 1500 = ?", options:[3500,3490,3505,3510], answer:3500},
-    {q: "4999 + 1 = ?", options:[5000,5001,4998,4999], answer:5000},
-
-    {q: "4500 + 499 = ?", options:[4999,5000,4998,5001], answer:4999},
-    {q: "6200 + 780 = ?", options:[6980,6985,6990,6975], answer:6980},
-    {q: "3456 + 1234 = ?", options:[4690,4690,4690,4690], answer:4690},
-    {q: "7000 + 299 = ?", options:[7299,7300,7298,7289], answer:7299},
-    {q: "888 + 1111 = ?", options:[1999,1998,2000,1997], answer:1999}
+  {q:"4578 + 622 = ?", options:[5198,5200,5190,5202], answer:5198},
+  {q:"3200 + 178 = ?", options:[3378,3380,3385,3365], answer:3378},
+  {q:"4444 + 555 = ?", options:[4999,5000,4998,5001], answer:4999},
+  {q:"3000 + 678 = ?", options:[3678,3680,3670,3668], answer:3678},
+  {q:"1500 + 799 = ?", options:[2299,2298,2297,2300], answer:2299},
+  
+  {q:"2345 + 765 = ?", options:[3110,3111,3112,3100], answer:3110},
+  {q:"4000 + 1234 = ?", options:[5234,5230,5235,5240], answer:5234},
+  {q:"678 + 321 = ?", options:[999,1000,1001,998], answer:999},
+  {q:"2000 + 1500 = ?", options:[3500,3490,3505,3510], answer:3500},
+  {q:"4999 + 1 = ?", options:[5000,5001,4998,4999], answer:5000},
+  
+  {q:"4500 + 499 = ?", options:[4999,5000,4998,5001], answer:4999},
+  {q:"6200 + 780 = ?", options:[6980,6985,6990,6975], answer:6980},
+  {q:"3456 + 1234 = ?", options:[4690,4690,4690,4690], answer:4690},
+  {q:"7000 + 299 = ?", options:[7299,7300,7298,7289], answer:7299},
+  {q:"888 + 1111 = ?", options:[1999,1998,2000,1997], answer:1999}
 ];
 
-let currentQuestion = 0;
-let score = 0;
-const totalQuestions = questions.length;
+let currentQuestion=0;
+let score=0;
 
-const splash = document.getElementById("splash");
-const game = document.getElementById("game");
-const endScreen = document.getElementById("endScreen");
-const questionBox = document.getElementById("questionBox");
-const aliensDiv = document.getElementById("aliens");
-const scoreBoard = document.getElementById("scoreBoard");
-const levelDisplay = document.getElementById("levelDisplay");
-const crystalMeter = document.getElementById("crystalMeter");
-const playAgainBtn = document.getElementById("playAgainBtn");
-const correctSound = document.getElementById("correctSound");
-const wrongSound = document.getElementById("wrongSound");
+const splash=document.getElementById("splash");
+const game=document.getElementById("game");
+const endScreen=document.getElementById("endScreen");
+const questionBox=document.getElementById("questionBox");
+const aliensDiv=document.getElementById("aliens");
+const scoreBoard=document.getElementById("scoreBoard");
+const levelDisplay=document.getElementById("levelDisplay");
+const crystalMeter=document.getElementById("crystalMeter");
+const playAgainBtn=document.getElementById("playAgainBtn");
+const correctSound=document.getElementById("correctSound");
+const wrongSound=document.getElementById("wrongSound");
 
-// Splash display
-splash.style.display = "flex";
-setTimeout(() => {
-    splash.style.display = "none";
-    game.style.display = "flex";
-    showQuestion();
-}, 2500);
+// Level backgrounds
+const levelBackgrounds=["assets/moon-bg.png","assets/asteroid-bg.png","assets/background-galaxy.png"];
+
+splash.style.display="flex";
+setTimeout(()=>{
+  splash.style.display="none";
+  game.style.display="flex";
+  showQuestion();
+},2500);
 
 function showQuestion(){
-    if(currentQuestion >= totalQuestions){
-        endGame();
-        return;
-    }
-
-    const q = questions[currentQuestion];
-    questionBox.textContent = q.q;
-
-    // Level display
-    let levelIndex = Math.floor(currentQuestion/5);
-    let levelName = ["Level 1 – Moon Valley","Level 2 – Asteroid Belt","Level 3 – Galaxy Gate"][levelIndex];
-    levelDisplay.textContent = levelName;
-
-    // Crystal meter
-    let crystalsFilled = (currentQuestion % 5);
-    let crystalStr = "";
-    for(let i=0;i<5;i++){
-        crystalStr += i < crystalsFilled ? "🔷" : "⚪";
-    }
-    crystalMeter.innerHTML = "Crystals: "+crystalStr;
-
-    // Show aliens/options
-    aliensDiv.innerHTML = "";
-    q.options.forEach(option=>{
-        const div = document.createElement("div");
-        div.classList.add("alien");
-        div.textContent = option;
-        div.style.top = "0px"; // start top
-        // float left-right
-        let dir = Math.random()<0.5?1:-1;
-        let left = Math.random()*200 + 50;
-        div.style.position="absolute";
-        div.style.left = left+"px";
-        aliensDiv.appendChild(div);
-
-        let floatInterval = setInterval(()=>{
-            let curLeft = parseFloat(div.style.left);
-            if(curLeft>window.innerWidth-120 || curLeft<10) dir*=-1;
-            div.style.left = (curLeft + dir*2)+"px";
-            div.style.top = parseFloat(div.style.top)+0.5+"px"; // descending
-            if(parseFloat(div.style.top) > window.innerHeight-200) clearInterval(floatInterval); // stop at bottom
-        },20);
-
-        div.addEventListener("click", ()=>{
-            if(option===q.answer){
-                correctSound.currentTime=0;
-                correctSound.play();
-                score+=10;
-                scoreBoard.textContent="Score: "+score;
-                clearInterval(floatInterval);
-                currentQuestion++;
-                setTimeout(showQuestion, 500);
-            }else{
-                wrongSound.currentTime=0;
-                wrongSound.play();
-                div.classList.add("wiggle");
-                setTimeout(()=>div.classList.remove("wiggle"),500);
-            }
-        });
+  if(currentQuestion>=questions.length){ endGame(); return;}
+  const q=questions[currentQuestion];
+  questionBox.textContent=q.q;
+  
+  // Level and background
+  let levelIndex=Math.floor(currentQuestion/5);
+  levelDisplay.textContent=["Level 1 – Moon Valley","Level 2 – Asteroid Belt","Level 3 – Galaxy Gate"][levelIndex];
+  document.body.style.background=`url(${levelBackgrounds[levelIndex]}) center/cover no-repeat`;
+  
+  // Crystal meter
+  let crystalsFilled=currentQuestion%5;
+  let crystalStr="";
+  for(let i=0;i<5;i++){ crystalStr+=i<crystalsFilled?"🔷":"⚪"; }
+  crystalMeter.innerHTML="Crystals: "+crystalStr;
+  
+  // Aliens (placeholder: nova.png used temporarily)
+  aliensDiv.innerHTML="";
+  q.options.forEach(option=>{
+    const div=document.createElement("img");
+    div.src="assets/nova.png"; // replace later with alien1.png etc.
+    div.classList.add("alien");
+    div.width=100;
+    div.height=100;
+    div.alt=option;
+    div.addEventListener("click",()=>{
+      if(option===q.answer){
+        correctSound.currentTime=0; correctSound.play();
+        score+=10; scoreBoard.textContent="Score: "+score;
+        currentQuestion++;
+        setTimeout(showQuestion,500);
+      }else{
+        wrongSound.currentTime=0; wrongSound.play();
+        div.classList.add("wiggle");
+        setTimeout(()=>div.classList.remove("wiggle"),500);
+      }
     });
+    aliensDiv.appendChild(div);
+  });
 }
 
 function endGame(){
-    game.style.display="none";
-    endScreen.style.display="flex";
+  game.style.display="none";
+  endScreen.style.display="flex";
+  document.getElementById("clapSound").play();
 }
 
-// Play again
-playAgainBtn.addEventListener("click", ()=>{
-    currentQuestion=0;
-    score=0;
-    scoreBoard.textContent="Score: 0";
-    endScreen.style.display="none";
-    game.style.display="flex";
-    showQuestion();
+playAgainBtn.addEventListener("click",()=>{
+  currentQuestion=0; score=0; scoreBoard.textContent="Score: 0";
+  endScreen.style.display="none"; game.style.display="flex"; showQuestion();
 });
 </script>
 </body>
