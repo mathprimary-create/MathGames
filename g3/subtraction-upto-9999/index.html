@@ -1,1 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meteor Cleanup Mission – Subtraction 9999</title>
+<style>
+body {
+    margin: 0;
+    font-family: 'Arbutus', cursive;
+    overflow: hidden;
+}
+#splash, #game, #endScreen {
+    width: 100%;
+    height: 100vh;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+#splash img { width: 200px; height: auto; margin-bottom: 20px;}
+#overlay {
+    position: absolute;
+    top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.35);
+    z-index:1;
+}
+h1,h2,#questionBox,#scoreBoard,#levelDisplay,#crystalMeter {
+    position: relative;
+    z-index:2;
+    color: #ffffff;
+    text-shadow: 2px 2px 5px #000000;
+    text-align: center;
+}
+#questionBox { font-size: 2em; margin:10px; }
+#aliens {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+    position: relative;
+    z-index:2;
+}
+.alien {
+    width: 120px;
+    height: 120px;
+    cursor: pointer;
+    user-select: none;
+    position: absolute;
+    transition: transform 0.3s;
+}
+.alien:hover { transform: scale(1.1);}
+.wiggle { animation: wiggle 0.5s; }
+@keyframes wiggle {0% {transform: rotate(0deg);} 25% {transform: rotate(15deg);} 50% {transform: rotate(-15deg);} 75% {transform: rotate(10deg);} 100% {transform: rotate(0deg);}}
+.alien-number {
+    position: absolute;
+    bottom: 5px;
+    width: 100%;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #ffffff;
+    background: rgba(0,0,0,0.5);
+    border-radius: 10px;
+    text-shadow: 2px 2px 5px #000000;
+    z-index: 3;
+}
+#playAgainBtn { padding: 10px 20px; font-size: 1.5em; background-color: #4b2e83; color:white; border:none; border-radius:10px; cursor:pointer; margin-top:20px;}
+#playAgainBtn:hover {background-color:#6a4cb0;}
+#startBtn { padding: 12px 25px; font-size:1.5em; background-color:#4b2e83; color:white; border:none; border-radius:10px; cursor:pointer;}
+#startBtn:hover {background-color:#6a4cb0;}
+</style>
+</head>
+<body>
 
+<!-- Story / Goal Screen -->
+<div id="splash">
+    <img src="assets/innovine-logo.png" alt="Innovine Logo">
+    <h1>MISSION: METEOR CLEANUP</h1>
+    <h2>The galaxy is full of dangerous meteors! Help Nova collect the correct ones by solving subtraction problems.</h2>
+    <h2>GOAL: Solve all 10 subtraction problems to clear space and save the galaxy.</h2>
+    <button id="startBtn">Start Mission</button>
+</div>
+
+<!-- Game Screen -->
+<div id="game">
+    <div id="overlay"></div>
+    <h2 id="levelDisplay">Level 1 – Meteor Bay</h2>
+    <div id="scoreBoard">Score: 0</div>
+    <div id="crystalMeter">Treasures: <span>⚪⚪⚪⚪⚪</span></div>
+    <div id="questionBox">Question Here</div>
+    <div id="aliens"></div>
+</div>
+
+<!-- End Screen -->
+<div id="endScreen">
+    <h1>Mission Complete!</h1>
+    <h2>Well Done, Nova cleared the meteors!</h2>
+    <button id="playAgainBtn">Play Again</button>
+</div>
+
+<audio id="correctSound" src="assets/correct.mp3"></audio>
+<audio id="wrongSound" src="assets/wrong.mp3"></audio>
+<audio id="clapSound" src="assets/freesound_community-claps-44774.mp3"></audio>
+
+<script>
+// 10 subtraction questions divided 3-3-4
+const questions=[
+  {q:"876 - 432 = ?", options:[444,443,445], answer:444},
+  {q:"1000 - 576 = ?", options:[424,425,423], answer:424},
+  {q:"999 - 123 = ?", options:[876,875,877], answer:876},
+  
+  {q:"4321 - 1987 = ?", options:[2334,2335,2333], answer:2334},
+  {q:"5000 - 2456 = ?", options:[2544,2543,2545], answer:2544},
+  {q:"3000 - 1876 = ?", options:[1124,1125,1123], answer:1124},
+  
+  {q:"9876 - 4321 = ?", options:[5555,5554,5556], answer:5555},
+  {q:"8765 - 4321 = ?", options:[4444,4445,4443], answer:4444},
+  {q:"9999 - 8765 = ?", options:[1234,1235,1233], answer:1234},
+  {q:"5000 - 1234 = ?", options:[3766,3765,3767], answer:3766}
+];
+
+let currentQuestion=0,score=0;
+const splash=document.getElementById("splash");
+const game=document.getElementById("game");
+const endScreen=document.getElementById("endScreen");
+const questionBox=document.getElementById("questionBox");
+const aliensDiv=document.getElementById("aliens");
+const scoreBoard=document.getElementById("scoreBoard");
+const levelDisplay=document.getElementById("levelDisplay");
+const crystalMeter=document.getElementById("crystalMeter");
+const startBtn=document.getElementById("startBtn");
+const playAgainBtn=document.getElementById("playAgainBtn");
+const correctSound=document.getElementById("correctSound");
+const wrongSound=document.getElementById("wrongSound");
+const levelBackgrounds=["assets/moon-bg.png","assets/moon-bg.png","assets/moon-bg.png"];
+
+// Start button
+startBtn.addEventListener("click",()=>{
+  splash.style.display="none";
+  game.style.display="flex";
+  showQuestion();
+});
+
+function showQuestion(){
+  if(currentQuestion>=questions.length){ endGame(); return;}
+  const q=questions[currentQuestion];
+  questionBox.textContent=q.q;
+
+  // Level display
+  let levelIndex=Math.floor(currentQuestion/3);
+  let levelNames=["Level 1 – Meteor Bay","Level 2 – Asteroid Field","Level 3 – Galaxy Core"];
+  levelDisplay.textContent=levelNames[levelIndex];
+  document.body.style.background=`url(${levelBackgrounds[levelIndex]}) center/cover no-repeat`;
+
+  // Crystal / treasure meter
+  let treasuresCollected=currentQuestion%5;
+  let treasureStr="";
+  for(let i=0;i<5;i++) treasureStr+=i<treasuresCollected?"🔷":"⚪";
+  crystalMeter.innerHTML="Treasures: "+treasureStr;
+
+  // Falling options
+  aliensDiv.innerHTML="";
+  q.options.forEach((option,index)=>{
+    const div=document.createElement("div");
+    div.classList.add("alien");
+    div.style.left=(50+index*140)+"px"; // spread horizontally
+    div.style.top="20px";
+
+    const numberLabel=document.createElement("div");
+    numberLabel.classList.add("alien-number");
+    numberLabel.textContent=option;
+    div.appendChild(numberLabel);
+
+    aliensDiv.appendChild(div);
+
+    // Floating animation (only vertical descent for simplicity)
+    let floatInterval=setInterval(()=>{
+      let curTop=parseFloat(div.style.top);
+      if(curTop<400) div.style.top=(curTop+2)+"px"; // stop before bottom
+    },20);
+
+    div.addEventListener("click",()=>{
+      if(option===q.answer){
+        correctSound.currentTime=0; correctSound.play();
+        score+=10; scoreBoard.textContent="Score: "+score;
+        clearInterval(floatInterval);
+        currentQuestion++;
+        showQuestion();
+      } else{
+        wrongSound.currentTime=0; wrongSound.play();
+        numberLabel.style.background="rgba(255,0,0,0.5)";
+        setTimeout(()=>numberLabel.style.background="rgba(0,0,0,0.5)",500);
+      }
+    });
+  });
+}
+
+function endGame(){
+  game.style.display="none";
+  endScreen.style.display="flex";
+  document.getElementById("clapSound")?.play();
+}
+
+playAgainBtn.addEventListener("click",()=>{
+  currentQuestion=0; score=0; scoreBoard.textContent="Score: 0";
+  endScreen.style.display="none"; game.style.display="flex"; showQuestion();
+});
