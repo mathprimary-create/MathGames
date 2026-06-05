@@ -10,7 +10,9 @@
   .screen{display:none;min-height:100vh;padding:18px;text-align:center}
   .active{display:flex;flex-direction:column;align-items:center;justify-content:center}
   .card{background:rgba(255,255,255,0.93);border-radius:24px;padding:22px;max-width:850px;width:95%;box-shadow:0 10px 25px rgba(0,0,0,0.18)}
-  .logo{max-width:150px;margin-bottom:12px}
+  .logo{max-width:150px;margin-bottom:12px; animation:fadeIn 1s ease;}
+  @keyframes fadeIn { from {opacity:0} to {opacity:1} }
+
   h1{color:#174ea6;font-size:clamp(28px,5vw,48px);margin:10px 0}
   h2{color:#0b8043;font-size:clamp(22px,4vw,34px)}
   button{border:0;border-radius:18px;padding:14px 24px;font-size:20px;font-weight:bold;cursor:pointer;background:#ffbf00;color:#4a2b00;box-shadow:0 5px 0 #c58b00;margin:8px}
@@ -30,9 +32,6 @@
   .track-zone{position:relative;max-width:950px;height:170px;margin:5px auto}
   .track{position:absolute;bottom:0;left:0;width:100%;height:90px;object-fit:cover}
   .train{position:absolute;bottom:42px;left:2%;width:180px;transition:left 1s ease;}
-  .wheel{position:absolute;width:40px;height:40px;bottom:0;left:20px;animation:rotateWheel 0.5s linear infinite; transform-origin:center;}
-
-  @keyframes rotateWheel{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 
   /* Question card */
   .question-card{max-width:850px;margin:10px auto;background:rgba(255,255,255,0.95);border-radius:24px;padding:18px;box-shadow:0 8px 20px rgba(0,0,0,0.2)}
@@ -50,9 +49,16 @@
 </head>
 <body>
 
-<section id="start" class="screen active">
+<!-- SPLASH SCREEN FOR 5 SECONDS -->
+<section id="splash" class="screen active">
   <div class="card">
-    <img src="assets/logo.png" class="logo" onerror="this.style.display='none'">
+    <img src="assets/logo.png" class="logo">
+  </div>
+</section>
+
+<!-- START SCREEN -->
+<section id="start" class="screen">
+  <div class="card">
     <h1>🚂 Train Number Journey</h1>
     <h2>Grade 1 Maths — Number System 0–99</h2>
     <p>Help the number train move through Math Town by solving number challenges.</p>
@@ -61,6 +67,7 @@
   </div>
 </section>
 
+<!-- GAME SCREEN -->
 <section id="game" class="screen game-area">
   <img src="assets/clouds.png" class="cloud one">
   <img src="assets/clouds.png" class="cloud two">
@@ -87,6 +94,7 @@
   </div>
 </section>
 
+<!-- RESULT SCREEN -->
 <section id="result" class="screen">
   <div class="card">
     <img src="assets/stars.png" style="max-width:140px" onerror="this.style.display='none'">
@@ -111,7 +119,15 @@ const questions = [
   {q:"Which is the smallest number?", options:["72","27","70","67"], answer:"27"}
 ];
 
-let current = 0, score = 0, attempts = 2, timeLeft = 60, timer;
+let current=0, score=0, attempts=2, timeLeft=60, timer;
+
+// SHOW START SCREEN AFTER 5 SECONDS SPLASH
+window.onload = function() {
+  setTimeout(()=>{
+    document.getElementById("splash").classList.remove("active");
+    document.getElementById("start").classList.add("active");
+  },5000);
+};
 
 function startGame(){
   document.getElementById("start").classList.remove("active");
@@ -127,47 +143,46 @@ function loadQuestion(){
   document.getElementById("time").textContent = timeLeft;
   document.getElementById("attempts").textContent = attempts;
   document.getElementById("feedback").textContent = "";
-  document.getElementById("qnum").textContent = current + 1;
+  document.getElementById("qnum").textContent = current+1;
 
   const q = questions[current];
   document.getElementById("question").textContent = q.q;
-
   const optionsBox = document.getElementById("options");
   optionsBox.innerHTML = "";
   q.options.forEach(opt=>{
-    const div = document.createElement("div");
-    div.className = "option";
-    div.textContent = opt;
-    div.onclick = ()=>checkAnswer(opt, div);
+    const div=document.createElement("div");
+    div.className="option";
+    div.textContent=opt;
+    div.onclick=()=>checkAnswer(opt,div);
     optionsBox.appendChild(div);
   });
 
-  moveTrain(); // Move train for current question
-  timer = setInterval(updateTimer,1000);
+  moveTrain(); // Move train according to current question
+  timer=setInterval(updateTimer,1000);
 }
 
 function updateTimer(){
   timeLeft--;
-  document.getElementById("time").textContent = timeLeft;
+  document.getElementById("time").textContent=timeLeft;
   if(timeLeft<=0){
     clearInterval(timer);
-    showFeedback("Time is up!");
+    nextQuestion();
   }
 }
 
-function checkAnswer(selected, element){
+function checkAnswer(selected,element){
   const q = questions[current];
   if(selected===q.answer){
     clearInterval(timer);
     score++;
-    document.getElementById("score").textContent = score;
+    document.getElementById("score").textContent=score;
     element.style.background="#d7ffd9";
     element.style.borderColor="#34a853";
-    moveTrain(); // Advance train smoothly
+    moveTrain(); // Smooth movement
     setTimeout(nextQuestion,1000);
   } else {
     attempts--;
-    document.getElementById("attempts").textContent = attempts;
+    document.getElementById("attempts").textContent=attempts;
     element.classList.add("wrong");
     setTimeout(()=>element.classList.remove("wrong"),500);
     if(attempts<=0) setTimeout(nextQuestion,1000);
@@ -176,7 +191,7 @@ function checkAnswer(selected, element){
 
 function moveTrain(){
   const train = document.getElementById("train");
-  const progressPercent = ((current+1)/questions.length) * 100;
+  const progressPercent = ((current+1)/questions.length)*100;
   train.style.left = `calc(2% + ${progressPercent}%)`;
 }
 
@@ -192,5 +207,6 @@ function restartGame(){
   startGame();
 }
 </script>
+
 </body>
 </html>
