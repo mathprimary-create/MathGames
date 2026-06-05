@@ -14,7 +14,7 @@
   @keyframes popIn {0% {transform: scale(0.9); opacity:0;} 100% {transform: scale(1); opacity:1;}}
 
   .innovine-logo { max-width: 220px; width: 100%; height: auto; margin-bottom: 20px; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.1)); animation: pulseLogo 2s infinite ease-in-out; }
-  @keyframes pulseLogo {0%,100%{transform: scale(1);}50%{transform: scale(1.05);}}
+  @keyframes pulseLogo {0%,100%{transform: scale(1);}50%{transform: scale(1.05);} }
 
   h1{color:#174ea6;font-size:clamp(28px,5vw,44px); margin:10px 0;}
   h2{color:#0b8043;font-size:clamp(20px,4vw,30px); margin-top:5px;}
@@ -115,16 +115,21 @@
 </section>
 
 <script>
-// Sample questions array
 const questions = [
-  {q:"The train has coaches 21,22,__ ,24. Which coach is missing?", options:["20","23","25","26"], answer:"23"},
-  {q:"Which number comes just before 38?", options:["36","37","39","40"], answer:"37"},
-  {q:"Which number comes just after 49?", options:["48","50","59","40"], answer:"50"}
+  { q: "What number comes just after 7?", options: ["6","7","8","9"], answer: "8" },
+  { q: "What number comes just before 15?", options: ["14","15","16","13"], answer: "14" },
+  { q: "Fill the missing number: 23, 24, __, 26", options: ["25","27","24","28"], answer: "25" },
+  { q: "Which is the greatest number?", options: ["42","37","50","45"], answer: "50" },
+  { q: "Which is the smallest number?", options: ["17","23","19","15"], answer: "15" },
+  { q: "What number has 4 tens and 7 ones?", options: ["47","74","40","70"], answer: "47" },
+  { q: "What number has 0 tens and 9 ones?", options: ["9","90","19","99"], answer: "9" },
+  { q: "Arrange in ascending order: 12, 9, 15", options: ["9,12,15","15,12,9","12,15,9","9,15,12"], answer: "9,12,15" },
+  { q: "Arrange in descending order: 22, 18, 25", options: ["25,22,18","18,22,25","22,18,25","25,18,22"], answer: "25,22,18" },
+  { q: "Fill the missing number: 30, __, 32", options: ["31","33","30","32"], answer: "31" }
 ];
 
 let current = 0, score = 0, attempts = 2, timer, timeLeft = 60;
 
-// Show splash for 5 seconds, then reveal start
 window.onload = function(){
   setTimeout(()=>{
     document.getElementById("splash").classList.remove("active");
