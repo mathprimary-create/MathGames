@@ -210,3 +210,280 @@
     margin-top: 12px; 
   }
   .correct-msg { color: #188038; animation: bounce 0.4s ease; }
+  .wrong-msg { color: #d93025; }
+
+  .final-badge { 
+    background: #ffef99; 
+    border: 3px dashed #fbbc04; 
+    padding: 6px 16px; 
+    border-radius: 14px; 
+    display: inline-block; 
+    margin-bottom: 10px; 
+    font-weight: bold;
+    color: #a87300;
+  }
+  
+  @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-10px); } 40% { transform: translateX(10px); } 60% { transform: translateX(-10px); } 80% { transform: translateX(10px); } }
+  
+  .wrongAnim { animation: shake 0.4s ease-in-out; border-color: #d93025 !important; box-shadow: 0 4px 0 #d93025 !important; background: #fce8e6 !important; color: #d93025; }
+  .correctAnim { border-color: #188038 !important; box-shadow: 0 4px 0 #188038 !important; background: #e6f4ea !important; color: #188038; }
+
+  .progress-wrap { width: 100%; max-width: 850px; background: #e0e0e0; height: 12px; border-radius: 6px; margin: 10px auto; overflow: hidden; border: 2px solid #bbb; }
+  .progress { height: 100%; width: 0%; background: linear-gradient(to right, #ffbf00, #0b8043); transition: width 0.5s ease; }
+  .result-stars { font-size: 60px; margin: 15px 0; color: #fbbc04; }
+</style>
+</head>
+<body>
+
+<section id="splash" class="screen active">
+  <div class="card splash-container">
+    <img src="assets/logo.png" alt="Innovine Logo" class="innovine-logo">
+    <h1>Innovine</h1>
+    <h2>Loading Train Journey...</h2>
+  </div>
+</section>
+
+<section id="start" class="screen">
+  <div class="card">
+    <h1>🚂 Train Number Journey</h1>
+    <h2>Grade 1 Maths — Number System 0–99</h2>
+    <p>Help our colorful number train complete its journey through Math Town!</p>
+    <div style="background: #eef7ff; padding: 15px; border-radius: 16px; margin: 15px 0; border: 2px dashed #74b9ff; text-align: left;">
+      <b>🎮 Engineering Rules:</b>
+      <ul style="margin: 8px 0 0 0; padding-left: 20px;">
+        <li>You have <b>60 seconds</b> for each station.</li>
+        <li>You have <b>2 fuel attempts</b> per question before running late.</li>
+      </ul>
+    </div>
+    <button onclick="startGame()">Start Journey 🟢</button>
+  </div>
+</section>
+
+<section id="game" class="game-area">
+  <div class="cloud one"></div>
+  <div class="cloud two"></div>
+
+  <div class="topbar">
+    <div class="timer">⏱️ Time: <span id="time">60</span>s</div>
+    <div class="score">⭐ Score: <span id="score">0</span></div>
+    <div class="attempts">🔁 Fuel Attempts: <span id="attempts">2</span>/2</div>
+  </div>
+
+  <div class="progress-wrap"><div id="progress" class="progress"></div></div>
+
+  <div class="track-zone">
+    <div class="track"></div>
+    <div id="train" class="train">🚂</div>
+  </div>
+
+  <div class="question-card">
+    <div id="finalBadge" class="final-badge" style="display:none;">🏆 Final Station</div>
+    <div class="qno">Station <span id="qnum">1</span> of <span id="total">10</span></div>
+    <div id="question" class="question">Loading...</div>
+    <div id="options" class="options"></div>
+    <div id="feedback" class="feedback"></div>
+  </div>
+</section>
+
+<section id="result" class="screen">
+  <div class="card">
+    <h1>🏁 Journey Complete!</h1>
+    <div id="resultStars" class="result-stars">⭐⭐⭐</div>
+    <h2 id="finalScore">Your Score: 0 / 10</h2>
+    <p id="resultMsg">Awesome Job Engineer!</p>
+    <button onclick="restartGame()">Play Again 🔄</button>
+  </div>
+</section>
+
+<script>
+// Web Audio API Synthesizer
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playSound(type) {
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const osc = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
+  osc.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+
+  if (type === 'correct') {
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3);
+    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+  } else {
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+    osc.frequency.linearRampToValueAtTime(110, audioCtx.currentTime + 0.4);
+    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+  }
+}
+
+// 10 Grade-1 appropriate questions
+const questions = [
+  {q:"The train has coaches 21, 22, __, 24. Which coach is missing?", options:["20","23","25","26"], answer:"23"},
+  {q:"Which number comes just before 38?", options:["36","37","39","40"], answer:"37"},
+  {q:"Which number comes just after 49?", options:["48","50","59","40"], answer:"50"},
+  {q:"The coaches are 55, __, 57. Which number comes in between?", options:["54","56","58","59"], answer:"56"},
+  {q:"Which is the greatest number?", options:["45","54","39","50"], answer:"54"},
+  {q:"Which is the smallest number?", options:["72","27","70","67"], answer:"27"},
+  {q:"Count by 10s: 10, 20, 30, __, 50. What is missing?", options:["35","40","45","60"], answer:"40"},
+  {q:"Which number is smaller than 15?", options:["18","12","20","16"], answer:"12"},
+  {q:"What number is made of 3 tens and 5 ones?", options:["53","35","80","15"], answer:"35"},
+  {q:"Count backwards: 12, 11, __, 9, 8. What is missing?", options:["13","10","7","14"], answer:"10"}
+];
+
+let current = 0, score = 0, attempts = 2, timeLeft = 60, timer;
+
+// Enforces exactly a 5-second (5000ms) Display Window for the Innovine Splash Logo
+window.onload = function(){
+  setTimeout(() => {
+    document.getElementById("splash").classList.remove("active");
+    document.getElementById("start").classList.add("active");
+  }, 5000);
+};
+
+function startGame(){
+  document.getElementById("start").classList.remove("active");
+  document.getElementById("result").classList.remove("active");
+  document.getElementById("game").style.display = "flex";
+  document.getElementById("total").textContent = questions.length;
+  current = 0; score = 0;
+  document.getElementById("score").textContent = score;
+  loadQuestion();
+}
+
+function loadQuestion(){
+  clearInterval(timer);
+  attempts = 2;
+  timeLeft = 60;
+  
+  document.getElementById("time").textContent = timeLeft;
+  document.getElementById("attempts").textContent = attempts;
+  document.getElementById("feedback").innerHTML = "";
+  document.getElementById("qnum").textContent = current + 1;
+  
+  document.getElementById("finalBadge").style.display = (current === questions.length - 1) ? "inline-block" : "none";
+
+  const q = questions[current];
+  document.getElementById("question").textContent = q.q;
+  
+  // Creates a shallow copy and randomizes option arrays on the fly
+  let shuffledOptions = [...q.options];
+  for (let i = shuffledOptions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
+  }
+
+  const optionsBox = document.getElementById("options");
+  optionsBox.innerHTML = "";
+  
+  shuffledOptions.forEach(opt => {
+    const div = document.createElement("div");
+    div.className = "option";
+    div.textContent = opt;
+    div.onclick = () => checkAnswer(opt, div);
+    optionsBox.appendChild(div);
+  });
+
+  updateProgressBar();
+  moveTrain();
+  timer = setInterval(updateTimer, 1000);
+}
+
+function updateTimer(){
+  timeLeft--;
+  document.getElementById("time").textContent = timeLeft;
+  if(timeLeft <= 0){
+    clearInterval(timer);
+    playSound('wrong');
+    lockOptions();
+    document.getElementById("feedback").innerHTML = "<span class='wrong-msg'>⏰ Station Time out! Moving along...</span>";
+    setTimeout(nextQuestion, 2000);
+  }
+}
+
+function checkAnswer(selected, element){
+  const q = questions[current];
+  
+  if(selected === q.answer){
+    clearInterval(timer);
+    playSound('correct');
+    score++;
+    document.getElementById("score").textContent = score;
+    element.classList.add("correctAnim");
+    lockOptions();
+    document.getElementById("feedback").innerHTML = "<span class='correct-msg'>🎉 Correct! Full steam ahead! 🚂</span>";
+    setTimeout(nextQuestion, 1500);
+  } else {
+    attempts--;
+    playSound('wrong');
+    document.getElementById("attempts").textContent = attempts;
+    element.classList.add("wrongAnim");
+    
+    if(attempts <= 0) {
+      clearInterval(timer);
+      lockOptions();
+      highlightCorrectAnswer();
+      document.getElementById("feedback").innerHTML = `<span class='wrong-msg'>Out of fuel! Correct number was ${q.answer}.</span>`;
+      setTimeout(nextQuestion, 2500);
+    } else {
+      document.getElementById("feedback").innerHTML = "<span class='wrong-msg'>❌ Try again! Check the track pattern.</span>";
+      setTimeout(() => element.classList.remove("wrongAnim"), 500);
+    }
+  }
+}
+
+function lockOptions() {
+  document.querySelectorAll('.option').forEach(opt => opt.classList.add('disabled'));
+}
+
+function highlightCorrectAnswer() {
+  document.querySelectorAll('.option').forEach(opt => {
+    if(opt.textContent === questions[current].answer) opt.classList.add("correctAnim");
+  });
+}
+
+function updateProgressBar() {
+  document.getElementById("progress").style.width = `${(current / questions.length) * 100}%`;
+}
+
+function moveTrain(){
+  const progressPercent = (current / questions.length) * 80;
+  document.getElementById("train").style.left = `calc(2% + ${progressPercent}%)`;
+}
+
+function nextQuestion(){
+  current++;
+  if(current < questions.length) {
+    loadQuestion();
+  } else {
+    updateProgressBar();
+    document.getElementById("progress").style.width = `100%`;
+    document.getElementById("train").style.left = `84%`;
+    setTimeout(showResults, 800);
+  }
+}
+
+function showResults() {
+  document.getElementById("game").style.display = "none";
+  document.getElementById("result").classList.add("active");
+  document.getElementById("finalScore").textContent = `Your Score: ${score} / ${questions.length}`;
+  
+  let stars = "⭐", msg = "Good try! Let's power up your tracks again.";
+  if (score === questions.length) { stars = "⭐⭐⭐"; msg = "🏆 Perfect Conductor! Master of the Lines!"; }
+  else if (score >= 7) { stars = "⭐⭐"; msg = "Great job! Safe travels throughout Math Town!"; }
+  
+  document.getElementById("resultStars").textContent = stars;
+  document.getElementById("resultMsg").textContent = msg;
+}
+
+function restartGame(){
+  document.getElementById("result").classList.remove("active");
+  startGame();
+}
+</script>
+</body>
+</html>
