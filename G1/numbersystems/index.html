@@ -1,1 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Train Number Journey</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Comic Sans MS',Arial,sans-serif;background:#bdeeff;color:#222;overflow-x:hidden;}
+  .screen{display:none;min-height:100vh;padding:18px;text-align:center}
+  .active{display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .card{background:rgba(255,255,255,0.93);border-radius:24px;padding:22px;max-width:850px;width:95%;box-shadow:0 10px 25px rgba(0,0,0,0.18)}
+  .logo{max-width:150px;margin-bottom:12px}
+  h1{color:#174ea6;font-size:clamp(28px,5vw,48px);margin:10px 0}
+  h2{color:#0b8043;font-size:clamp(22px,4vw,34px)}
+  button{border:0;border-radius:18px;padding:14px 24px;font-size:20px;font-weight:bold;cursor:pointer;background:#ffbf00;color:#4a2b00;box-shadow:0 5px 0 #c58b00;margin:8px}
+  button:active{transform:translateY(3px);box-shadow:0 2px 0 #c58b00}
 
+  /* GAME AREA */
+  .game-area{position:relative;min-height:100vh;background:url("assets/background.png") center/cover no-repeat;padding:12px;overflow:hidden}
+
+  /* Clouds */
+  .cloud{position:absolute;width:150px;opacity:.9}
+  .cloud.one{top:30px;left:-160px;animation:floatCloud 25s linear infinite;}
+  .cloud.two{top:90px;left:-300px;animation:floatCloud 35s linear infinite;}
+
+  @keyframes floatCloud{0%{transform:translateX(0);}100%{transform:translateX(130vw);}}
+
+  /* Track & Train */
+  .track-zone{position:relative;max-width:950px;height:170px;margin:5px auto}
+  .track{position:absolute;bottom:0;left:0;width:100%;height:90px;object-fit:cover}
+  .train{position:absolute;bottom:42px;left:2%;width:180px;transition:left 1s ease;}
+  .wheel{position:absolute;width:40px;height:40px;bottom:0;left:20px;animation:rotateWheel 0.5s linear infinite; transform-origin:center;}
+
+  @keyframes rotateWheel{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+
+  /* Question card */
+  .question-card{max-width:850px;margin:10px auto;background:rgba(255,255,255,0.95);border-radius:24px;padding:18px;box-shadow:0 8px 20px rgba(0,0,0,0.2)}
+  .qno{font-size:18px;color:#666}
+  .question{font-size:clamp(22px,4vw,34px);font-weight:bold;margin:12px 0}
+  .options{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .option{background:#fff;border:4px solid #74b9ff;border-radius:18px;padding:18px;font-size:24px;font-weight:bold;cursor:pointer;min-height:70px}
+  .option:hover{background:#eaf6ff}
+  .feedback{min-height:44px;font-size:20px;font-weight:bold;margin-top:10px}
+  .correct{color:#188038}.wrong{color:#d93025}
+
+  .final-badge{background:#ffef99;border:3px dashed #fbbc04;padding:8px 14px;border-radius:14px;display:inline-block;margin-bottom:8px;font-weight:bold}
+  .result-stars{font-size:46px}
+</style>
+</head>
+<body>
+
+<section id="start" class="screen active">
+  <div class="card">
+    <img src="assets/logo.png" class="logo" onerror="this.style.display='none'">
+    <h1>🚂 Train Number Journey</h1>
+    <h2>Grade 1 Maths — Number System 0–99</h2>
+    <p>Help the number train move through Math Town by solving number challenges.</p>
+    <p><b>Rules:</b> You get 60 seconds and 2 attempts for each question.</p>
+    <button onclick="startGame()">Start Journey</button>
+  </div>
+</section>
+
+<section id="game" class="screen game-area">
+  <img src="assets/clouds.png" class="cloud one">
+  <img src="assets/clouds.png" class="cloud two">
+
+  <div class="topbar">
+    <div class="timer">⏱ Time: <span id="time">60</span>s</div>
+    <div class="score">⭐ Score: <span id="score">0</span></div>
+    <div class="attempts">🔁 Attempts Left: <span id="attempts">2</span></div>
+  </div>
+
+  <div class="progress-wrap"><div id="progress" class="progress"></div></div>
+
+  <div class="track-zone">
+    <img src="assets/track.png" class="track">
+    <img src="assets/train.png" id="train" class="train">
+  </div>
+
+  <div class="question-card">
+    <div id="finalBadge" class="final-badge" style="display:none;">Final Challenge</div>
+    <div class="qno">Question <span id="qnum">1</span> of <span id="total"></span></div>
+    <div id="question" class="question"></div>
+    <div id="options" class="options"></div>
+    <div id="feedback" class="feedback"></div>
+  </div>
+</section>
+
+<section id="result" class="screen">
+  <div class="card">
+    <img src="assets/stars.png" style="max-width:140px" onerror="this.style.display='none'">
+    <h1>Journey Complete!</h1>
+    <div id="resultStars" class="result-stars"></div>
+    <h2 id="finalScore"></h2>
+    <p id="resultMsg"></p>
+    <button onclick="restartGame()">Play Again</button>
+  </div>
+</section>
+
+<audio id="correctSound" src="assets/freesound_community-claps-44774.mp3"></audio>
+<audio id="wrongSound" src="assets/wrong.mp3"></audio>
+
+<script>
+const questions = [
+  {q:"The train has coach 21, 22, __, 24. Which coach is missing?", options:["20","23","25","26"], answer:"23"},
+  {q:"Which number comes just before 38?", options:["36","37","39","40"], answer:"37"},
+  {q:"Which number comes just after 49?", options:["48","50","59","40"], answer:"50"},
+  {q:"The coaches are 55, __, 57. Which number comes in between?", options:["54","56","58","59"], answer:"56"},
+  {q:"Which is the greatest number?", options:["45","54","39","50"], answer:"54"},
+  {q:"Which is the smallest number?", options:["72","27","70","67"], answer:"27"}
+];
+
+let current = 0, score = 0, attempts = 2, timeLeft = 60, timer;
+
+function startGame(){
+  document.getElementById("start").classList.remove("active");
+  document.getElementById("game").classList.add("active");
+  document.getElementById("total").textContent = questions.length;
+  loadQuestion();
+}
+
+function loadQuestion(){
+  clearInterval(timer);
+  attempts = 2;
+  timeLeft = 60;
+  document.getElementById("time").textContent = timeLeft;
+  document.getElementById("attempts").textContent = attempts;
+  document.getElementById("feedback").textContent = "";
+  document.getElementById("qnum").textContent = current + 1;
+
+  const q = questions[current];
+  document.getElementById("question").textContent = q.q;
+
+  const optionsBox = document.getElementById("options");
+  optionsBox.innerHTML = "";
+  q.options.forEach(opt=>{
+    const div = document.createElement("div");
+    div.className = "option";
+    div.textContent = opt;
+    div.onclick = ()=>checkAnswer(opt, div);
+    optionsBox.appendChild(div);
+  });
+
+  moveTrain(); // Move train for current question
+  timer = setInterval(updateTimer,1000);
+}
+
+function updateTimer(){
+  timeLeft--;
+  document.getElementById("time").textContent = timeLeft;
+  if(timeLeft<=0){
+    clearInterval(timer);
+    showFeedback("Time is up!");
+  }
+}
+
+function checkAnswer(selected, element){
+  const q = questions[current];
+  if(selected===q.answer){
+    clearInterval(timer);
+    score++;
+    document.getElementById("score").textContent = score;
+    element.style.background="#d7ffd9";
+    element.style.borderColor="#34a853";
+    moveTrain(); // Advance train smoothly
+    setTimeout(nextQuestion,1000);
+  } else {
+    attempts--;
+    document.getElementById("attempts").textContent = attempts;
+    element.classList.add("wrong");
+    setTimeout(()=>element.classList.remove("wrong"),500);
+    if(attempts<=0) setTimeout(nextQuestion,1000);
+  }
+}
+
+function moveTrain(){
+  const train = document.getElementById("train");
+  const progressPercent = ((current+1)/questions.length) * 100;
+  train.style.left = `calc(2% + ${progressPercent}%)`;
+}
+
+function nextQuestion(){
+  current++;
+  if(current<questions.length) loadQuestion();
+  else document.getElementById("result").classList.add("active");
+}
+
+function restartGame(){
+  current=0; score=0;
+  document.getElementById("result").classList.remove("active");
+  startGame();
+}
+</script>
+</body>
+</html>
