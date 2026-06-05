@@ -44,15 +44,25 @@
     100% { transform: scale(1); opacity: 1; }
   }
 
-  /* Splash Screen Decorative Train */
-  .splash-train {
-    font-size: 80px;
-    margin: 20px 0;
-    animation: chug 1.5s ease-in-out infinite alternate;
+  /* Innovine Splash Screen Elements */
+  .splash-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
   }
-  @keyframes chug {
-    0% { transform: translateY(0) rotate(0deg); }
-    100% { transform: translateY(-10px) rotate(2deg); }
+  .innovine-logo {
+    max-width: 220px;
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.1));
+    animation: pulseLogo 2s infinite ease-in-out;
+  }
+  @keyframes pulseLogo {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
   }
 
   h1 { color: #174ea6; font-size: clamp(28px, 5vw, 44px); margin: 10px 0; }
@@ -87,14 +97,17 @@
     justify-content: space-between;
   }
 
-  /* Built-in Decorative Procedural Clouds */
+  /* Parallax Floating Clouds */
   .cloud { position: absolute; background: #fff; border-radius: 100px; opacity: 0.85; pointer-events: none; }
   .cloud::before, .cloud::after { content: ''; position: absolute; background: #fff; border-radius: 50%; }
-  .cloud.one { width: 120px; height: 40px; top: 40px; left: -150px; animation: floatCloud 30s linear infinite; }
+  
+  /* Fast Cloud */
+  .cloud.one { width: 120px; height: 40px; top: 40px; left: -150px; animation: floatCloud 22s linear infinite; }
   .cloud.one::before { width: 50px; height: 50px; top: -25px; left: 15px; }
   .cloud.one::after { width: 60px; height: 60px; top: -30px; left: 45px; }
   
-  .cloud.two { width: 160px; height: 50px; top: 110px; left: -200px; animation: floatCloud 42s linear infinite; }
+  /* Slow Cloud */
+  .cloud.two { width: 160px; height: 50px; top: 110px; left: -200px; animation: floatCloud 38s linear infinite; }
   .cloud.two::before { width: 65px; height: 65px; top: -30px; left: 20px; }
   .cloud.two::after { width: 80px; height: 80px; top: -40px; left: 60px; }
 
@@ -103,7 +116,7 @@
     100% { transform: translateX(calc(100vw + 250px)); }
   }
 
-  /* Top Dashboard Hud */
+  /* Top Dashboard HUD */
   .topbar { 
     display: flex; 
     justify-content: space-around; 
@@ -130,7 +143,6 @@
     width: 100%;
     height: 120px; 
     margin: 15px auto; 
-    background: transparent;
     z-index: 5;
   }
   .track { 
@@ -150,11 +162,11 @@
     left: 2%; 
     font-size: 55px;
     line-height: 1;
-    transition: left 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    transition: left 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
     filter: drop-shadow(0 4px 4px rgba(0,0,0,0.15));
   }
 
-  /* Quiz Cards Arena Layout */
+  /* Responsive Cards Area Layout */
   .question-card { 
     max-width: 850px; 
     width: 100%;
@@ -185,21 +197,17 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 0 #74b9ff;
-    transition: all 0.15s ease;
+    transition: all 0.1s ease;
   }
   .option:hover { background: #eaf6ff; transform: translateY(-2px); }
   .option:active { transform: translateY(2px); box-shadow: 0 1px 0 #74b9ff; }
-  .option.disabled { pointer-events: none; opacity: 0.7; }
+  .option.disabled { pointer-events: none; opacity: 0.6; }
   
   .feedback { 
     min-height: 40px; 
     font-size: 22px; 
     font-weight: bold; 
     margin-top: 12px; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
   }
   .correct-msg { color: #188038; animation: bounce 0.4s ease; }
   .wrong-msg { color: #d93025; }
@@ -213,30 +221,26 @@
     margin-bottom: 10px; 
     font-weight: bold;
     color: #a87300;
-    animation: flash 1s infinite alternate;
   }
   
-  @keyframes flash { from { opacity: 0.8; } to { opacity: 1; transform: scale(1.05); } }
   @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-  @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 50% { transform: translateX(8px); } 75% { transform: translateX(-8px); } }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-10px); } 40% { transform: translateX(10px); } 60% { transform: translateX(-10px); } 80% { transform: translateX(10px); } }
+  
   .wrongAnim { animation: shake 0.4s ease-in-out; border-color: #d93025 !important; box-shadow: 0 4px 0 #d93025 !important; background: #fce8e6 !important; color: #d93025; }
   .correctAnim { border-color: #188038 !important; box-shadow: 0 4px 0 #188038 !important; background: #e6f4ea !important; color: #188038; }
 
-  /* Progress Bar Layout UI */
   .progress-wrap { width: 100%; max-width: 850px; background: #e0e0e0; height: 12px; border-radius: 6px; margin: 10px auto; overflow: hidden; border: 2px solid #bbb; }
   .progress { height: 100%; width: 0%; background: linear-gradient(to right, #ffbf00, #0b8043); transition: width 0.5s ease; }
-
-  /* Results Elements Layout */
-  .result-stars { font-size: 60px; margin: 15px 0; color: #fbbc04; text-shadow: 0 3px 6px rgba(0,0,0,0.1); }
+  .result-stars { font-size: 60px; margin: 15px 0; color: #fbbc04; }
 </style>
 </head>
 <body>
 
 <section id="splash" class="screen active">
-  <div class="card">
-    <h1>Welcome Aboard!</h1>
-    <div class="splash-train">🚂✨</div>
-    <h2>Loading Math Town Express...</h2>
+  <div class="card splash-container">
+    <img src="assets/logo.png" alt="Innovine Logo" class="innovine-logo" onerror="this.src='https://placehold.co/200x200/174ea6/FFFFFF?text=Innovine'">
+    <h1>Innovine</h1>
+    <h2>Loading Train Journey...</h2>
   </div>
 </section>
 
@@ -244,12 +248,12 @@
   <div class="card">
     <h1>🚂 Train Number Journey</h1>
     <h2>Grade 1 Maths — Number System 0–99</h2>
-    <p>Help our colorful number train complete its journey through Math Town by handling the switching tracks and answering number puzzles correctly!</p>
+    <p>Help our colorful number train complete its journey through Math Town!</p>
     <div style="background: #eef7ff; padding: 15px; border-radius: 16px; margin: 15px 0; border: 2px dashed #74b9ff; text-align: left;">
       <b>🎮 Engineering Rules:</b>
       <ul style="margin: 8px 0 0 0; padding-left: 20px;">
-        <li>You have <b>60 seconds</b> for each calculation station.</li>
-        <li>You have <b>2 fuel attempts</b> per question before the train runs late.</li>
+        <li>You have <b>60 seconds</b> for each station.</li>
+        <li>You have <b>2 fuel attempts</b> per question before running late.</li>
       </ul>
     </div>
     <button onclick="startGame()">Start Journey 🟢</button>
@@ -263,7 +267,7 @@
   <div class="topbar">
     <div class="timer">⏱️ Time: <span id="time">60</span>s</div>
     <div class="score">⭐ Score: <span id="score">0</span></div>
-    <div class="attempts">🔁 Fuel: <span id="attempts">2</span>/2</div>
+    <div class="attempts">🔁 Fuel Attempts: <span id="attempts">2</span>/2</div>
   </div>
 
   <div class="progress-wrap"><div id="progress" class="progress"></div></div>
@@ -274,9 +278,9 @@
   </div>
 
   <div class="question-card">
-    <div id="finalBadge" class="final-badge" style="display:none;">🏆 Final Station Challenge</div>
+    <div id="finalBadge" class="final-badge" style="display:none;">🏆 Final Station</div>
     <div class="qno">Station <span id="qnum">1</span> of <span id="total">6</span></div>
-    <div id="question" class="question">Loading problem...</div>
+    <div id="question" class="question">Loading...</div>
     <div id="options" class="options"></div>
     <div id="feedback" class="feedback"></div>
   </div>
@@ -293,38 +297,27 @@
 </section>
 
 <script>
-// Web Audio API Procedural Sound Engine
+// Web Audio API Synthesizer
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
 function playSound(type) {
-  // Ensure AudioContext context is running if suspended by browser security configurations
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-  
+  if (audioCtx.state === 'suspended') audioCtx.resume();
   const osc = audioCtx.createOscillator();
   const gainNode = audioCtx.createGain();
   osc.connect(gainNode);
   gainNode.connect(audioCtx.destination);
 
   if (type === 'correct') {
-    // Upward happy sound
     osc.type = 'triangle';
     osc.frequency.setValueAtTime(440, audioCtx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3);
     gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.3);
-  } else if (type === 'wrong') {
-    // Downward error buzz
+    osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+  } else {
     osc.type = 'sawtooth';
     osc.frequency.setValueAtTime(220, audioCtx.currentTime);
     osc.frequency.linearRampToValueAtTime(110, audioCtx.currentTime + 0.4);
-    gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.4);
+    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.4);
   }
 }
 
@@ -339,12 +332,12 @@ const questions = [
 
 let current = 0, score = 0, attempts = 2, timeLeft = 60, timer;
 
-// Splash system initialization handling
+// Enforces exactly a 5-second (5000ms) Display Window for the Innovine Splash Logo
 window.onload = function(){
   setTimeout(() => {
     document.getElementById("splash").classList.remove("active");
     document.getElementById("start").classList.add("active");
-  }, 2500); // 2.5 seconds splash display
+  }, 5000);
 };
 
 function startGame(){
@@ -352,8 +345,7 @@ function startGame(){
   document.getElementById("result").classList.remove("active");
   document.getElementById("game").style.display = "flex";
   document.getElementById("total").textContent = questions.length;
-  current = 0;
-  score = 0;
+  current = 0; score = 0;
   document.getElementById("score").textContent = score;
   loadQuestion();
 }
@@ -368,12 +360,7 @@ function loadQuestion(){
   document.getElementById("feedback").innerHTML = "";
   document.getElementById("qnum").textContent = current + 1;
   
-  // Show badge for the final challenge question
-  if (current === questions.length - 1) {
-    document.getElementById("finalBadge").style.display = "inline-block";
-  } else {
-    document.getElementById("finalBadge").style.display = "none";
-  }
+  document.getElementById("finalBadge").style.display = (current === questions.length - 1) ? "inline-block" : "none";
 
   const q = questions[current];
   document.getElementById("question").textContent = q.q;
@@ -401,114 +388,4 @@ function updateTimer(){
     clearInterval(timer);
     playSound('wrong');
     lockOptions();
-    document.getElementById("feedback").innerHTML = "<span class='wrong-msg'>⏰ Time's up for this station! Moving on...</span>";
-    setTimeout(nextQuestion, 2000);
-  }
-}
-
-function checkAnswer(selected, element){
-  const q = questions[current];
-  
-  if(selected === q.answer){
-    clearInterval(timer);
-    playSound('correct');
-    score++;
-    document.getElementById("score").textContent = score;
-    element.classList.add("correctAnim");
-    lockOptions();
-    document.getElementById("feedback").innerHTML = "<span class='correct-msg'>🎉 Correct! Full steam ahead! 🚂</span>";
-    setTimeout(nextQuestion, 1500);
-  } else {
-    attempts--;
-    playSound('wrong');
-    document.getElementById("attempts").textContent = attempts;
-    element.classList.add("wrongAnim");
-    
-    // Check if any fuel drops down to 0
-    if(attempts <= 0) {
-      clearInterval(timer);
-      lockOptions();
-      // Emphasize correct answer for educational benefit
-      highlightCorrectAnswer();
-      document.getElementById("feedback").innerHTML = `<span class='wrong-msg'>Out of fuel! The correct coach was ${q.answer}.</span>`;
-      setTimeout(nextQuestion, 2500);
-    } else {
-      document.getElementById("feedback").innerHTML = "<span class='wrong-msg'>❌ Try again! Check the sequence.</span>";
-      // Remove shake animation after running so user can try again natively
-      setTimeout(() => element.classList.remove("wrongAnim"), 500);
-    }
-  }
-}
-
-function lockOptions() {
-  const options = document.querySelectorAll('.option');
-  options.forEach(opt => opt.classList.add('disabled'));
-}
-
-function highlightCorrectAnswer() {
-  const q = questions[current];
-  const options = document.querySelectorAll('.option');
-  options.forEach(opt => {
-    if(opt.textContent === q.answer) {
-      opt.classList.add("correctAnim");
-    }
-  });
-}
-
-function updateProgressBar() {
-  const progressPercent = (current / questions.length) * 100;
-  document.getElementById("progress").style.width = `${progressPercent}%`;
-}
-
-function moveTrain(){
-  const train = document.getElementById("train");
-  // Calculate movement intervals horizontally on tracks
-  const progressPercent = (current / questions.length) * 80; // Bound safely up to 82% max width
-  train.style.left = `calc(2% + ${progressPercent}%)`;
-}
-
-function nextQuestion(){
-  current++;
-  if(current < questions.length) {
-    loadQuestion();
-  } else {
-    // Process final updates before moving to layout screens
-    updateProgressBar();
-    document.getElementById("progress").style.width = `100%`;
-    const train = document.getElementById("train");
-    train.style.left = `85%`;
-    setTimeout(showResults, 800);
-  }
-}
-
-function showResults() {
-  document.getElementById("game").style.display = "none";
-  document.getElementById("result").classList.add("active");
-  
-  document.getElementById("finalScore").textContent = `Your Score: ${score} / ${questions.length}`;
-  
-  let stars = "";
-  let msg = "";
-  
-  if (score === questions.length) {
-    stars = "⭐⭐⭐";
-    msg = "🏆 Perfect Score! You are a master train conductor of numbers!";
-  } else if (score >= 4) {
-    stars = "⭐⭐";
-    msg = "Great job! You navigated almost all calculations successfully!";
-  } else {
-    stars = "⭐";
-    msg = "Good try! Play again to power up your calculation tracks!";
-  }
-  
-  document.getElementById("resultStars").textContent = stars;
-  document.getElementById("resultMsg").textContent = msg;
-}
-
-function restartGame(){
-  document.getElementById("result").classList.remove("active");
-  startGame();
-}
-</script>
-</body>
-</html>
+    document.getElementById("feedback").innerHTML = "
