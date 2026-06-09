@@ -3,168 +3,336 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grade 3: Multiplication Matrix</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <title>Living vs Non-Living Things Game</title>
     <style>
-        :root {
-            --primary: #0284c7;
-            --success: #10b981;
-            --danger: #ef4444;
-            --bg-gradient: linear-gradient(135deg, #fed7aa 0%, #bae6fd 100%);
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Comic Sans MS', sans-serif; }
-        body { overflow: hidden; background: var(--bg-gradient); height: 100vh; display: flex; justify-content: center; align-items: center; }
-        
-        #splashOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #ffffff; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.6s, visibility 0.6s; }
-        .logo-box { animation: breatheLogo 2.5s ease-in-out infinite alternate; }
-        @keyframes breatheLogo { 0% { transform: scale(0.96); } 100% { transform: scale(1.04); } }
-        .innovine-logo-img { width: 350px; height: auto; }
-        .splash-loader-track { width: 200px; height: 8px; background: #e2e8f0; border-radius: 10px; margin-top: 30px; overflow: hidden; }
-        .splash-loader-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #de1f26, #1f2c3f); animation: fillLoader 5s linear forwards; }
-        @keyframes fillLoader { 0% { width: 0%; } 100% { width: 100%; } }
 
-        .game-card { width: 92%; max-width: 600px; background: white; padding: 30px 20px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); text-align: center; border: 6px solid #0284c7; opacity: 0; transform: scale(0.9); transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .game-card.reveal-app { opacity: 1; transform: scale(1); }
-        .status-hub { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .pill { background: #f3f4f6; padding: 8px 16px; border-radius: 50px; font-weight: bold; }
-        
-        .question-box { font-size: 52px; font-weight: bold; color: #0c4a6e; margin: 25px 0; background: #f0f9ff; border-radius: 16px; padding: 15px; border: 3px solid #7dd3fc; }
-        .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        .option-card { background: white; padding: 18px; border-radius: 16px; font-size: 24px; font-weight: bold; cursor: pointer; transition: all 0.2s; border: 4px solid #e5e7eb; box-shadow: 0 6px 0 #d1d5db; }
-        .option-card:hover { transform: translateY(-3px); border-color: #38bdf8; box-shadow: 0 9px 0 #0284c7; background: #f0f9ff; }
-        
-        .feedback-message { font-size: 20px; font-weight: bold; min-height: 35px; margin-top: 20px; }
-        .msg-correct { color: var(--success); }
-        .msg-wrong { color: var(--danger); }
-        .screen-workspace { display: block; }
-        .screen-final { display: none; }
+        body {
+            background: linear-gradient(135deg, #a8ff78, #78ffd6);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .progress-bar {
+            background: #eee;
+            height: 12px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress {
+            background: #2ecc71;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-card {
+            background: #f8f9fa;
+            border: 3px dashed #bdc3c7;
+            border-radius: 15px;
+            padding: 30px 15px;
+            margin-bottom: 25px;
+        }
+
+        .word-to-sort {
+            font-size: 36px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .hint {
+            font-size: 14px;
+            color: #95a5a6;
+            font-style: italic;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+            box-shadow: 0 5px 0 #2980b9;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #2980b9;
+        }
+
+        .btn-living { background: #2ecc71; box-shadow: 0 5px 0 #27ae60; }
+        .btn-living:active { box-shadow: 0 1px 0 #27ae60; }
+
+        .btn-nonliving { background: #e67e22; box-shadow: 0 5px 0 #d35400; }
+        .btn-nonliving:active { box-shadow: 0 1px 0 #d35400; }
+
+        .feedback {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 15px;
+            height: 25px;
+        }
+
+        .score-screen {
+            display: none;
+        }
+
+        .final-score {
+            font-size: 48px;
+            color: #2ecc71;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .btn-restart {
+            background: #9b59b6;
+            box-shadow: 0 5px 0 #8e44ad;
+            width: 100%;
+            margin-top: 15px;
+        }
+        .btn-restart:active { box-shadow: 0 1px 0 #8e44ad; }
+
+        /* Audio Controls Box */
+        .volume-control {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        /* Simple Pure CSS Confetti */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #f1c40f;
+            top: -10px;
+            border-radius: 50%;
+            animation: fall 1s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(105vh) rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div id="splashOverlay">
-        <div class="logo-box"><img src="logo.png" class="innovine-logo-img" alt="Logo"></div>
-        <div class="splash-loader-track"><div class="splash-loader-bar"></div></div>
-    </div>
-
-    <div class="game-card" id="appMainCard">
-        <header>
-            <h1>⚡ Multiplication Masters</h1>
-            <p style="color:#6b7280; font-size:14px; text-transform:uppercase; margin-bottom:10px;">Grade 3 Math Quest</p>
-        </header>
-
-        <div id="gameWorkspace" class="screen-workspace">
-            <div class="status-hub">
-                <div class="pill">🏅 Quest: <span id="roundNum">1</span>/10</div>
-                <div>🔊 <input type="range" id="volSlider" min="0" max="1" step="0.1" value="0.7"></div>
-                <div class="pill">⭐ Score: <span id="scoreDisplay">0</span></div>
+    <div class="game-container">
+        <div id="quiz-screen">
+            <h1>Living vs Non-Living</h1>
+            <div class="subtitle">Grade 3 EVS Practice Game</div>
+            
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
             </div>
 
-            <p style="font-size: 18px; font-weight: bold; color: #4b5563;">Solve the multiplication puzzle:</p>
-            <div class="question-box" id="qBox">5 × 4 = ?</div>
+            <div class="question-card">
+                <div class="word-to-sort" id="item-text">...</div>
+                <div class="hint">Is this item alive or not alive?</div>
+            </div>
 
-            <div class="options-grid" id="optionsBox"></div>
-            <div class="feedback-message" id="feedbackBox"></div>
+            <div class="options-container">
+                <button class="btn btn-living" onclick="checkAnswer('Living')">🌿 Living Thing</button>
+                <button class="btn btn-nonliving" onclick="checkAnswer('Non-Living')">🚗 Non-Living Thing</button>
+            </div>
+
+            <div class="feedback" id="feedback-text"></div>
         </div>
 
-        <div id="finalDashboard" class="screen-final">
-            <h2 style="font-size:32px; color:#0284c7; margin-bottom:15px;">👑 Arena Mastered! 👑</h2>
-            <div style="font-size:22px; font-weight:bold; margin-bottom:20px;">Final Accuracy: <span id="finalScore" style="color:var(--success);">0/10</span></div>
-            <button style="padding:12px 30px; font-size:18px; font-weight:bold; background:var(--success); color:white; border:none; border-radius:12px; cursor:pointer;" onclick="resetEngine()">Play Again 🔄</button>
+        <div class="score-screen" id="score-screen">
+            <h1>Game Complete! 🎉</h1>
+            <p>You did a wonderful job balancing nature!</p>
+            <div class="final-score" id="final-score-text">0 / 10</div>
+            <button class="btn btn-restart" onclick="restartGame()">Play Again 🔄</button>
+        </div>
+
+        <div class="volume-control">
+            🔊 Sound Level: <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.5">
         </div>
     </div>
 
-    <audio id="sndCorrect" src="correct.mp3"></audio>
-    <audio id="sndWrong" src="wrong.mp3"></audio>
-
     <script>
-        let currentRound = 1;
-        let scoreCount = 0;
-        let solutionValue = 0;
-        let acceptingInput = true;
+        // Game items dataset (10 items as required)
+        const allItems = [
+            { name: "Puppy 🐶", type: "Living" },
+            { name: "Bicycle 🚲", type: "Non-Living" },
+            { name: "Mango Tree 🌳", type: "Living" },
+            { name: "Stone 🪨", type: "Non-Living" },
+            { name: "Butterfly 🦋", type: "Living" },
+            { name: "Water Bottle 🧪", type: "Non-Living" },
+            { name: "Bird 🐦", type: "Living" },
+            { name: "Book 📘", type: "Non-Living" },
+            { name: "Mushroom 🍄", type: "Living" },
+            { name: "Computer 💻", type: "Non-Living" }
+        ];
 
-        function generateQuestion() {
-            acceptingInput = true;
-            document.getElementById('feedbackBox').innerText = '';
-            document.getElementById('roundNum').innerText = currentRound;
-            document.getElementById('scoreDisplay').innerText = scoreCount * 10;
+        let gameItems = [];
+        let currentIndex = 0;
+        let score = 0;
+        let canAnswer = true;
 
-            let factorA = Math.floor(Math.random() * 10) + 1;
-            let factorB = Math.floor(Math.random() * 10) + 1;
-            solutionValue = factorA * factorB;
+        // Sound Generator Synth (Web Audio API) - No external audio files needed!
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(isCorrect) {
+            const volumeLevel = document.getElementById('volume-slider').value;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            gain.gain.setValueAtTime(volumeLevel, audioCtx.currentTime);
 
-            document.getElementById('qBox').innerText = `${factorA} × ${factorB} = ?`;
-
-            // Core algorithmic option distractors generation
-            let choices = [solutionValue];
-            while (choices.length < 4) {
-                let dev = solutionValue + (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 5) + 1);
-                if (dev > 0 && !choices.includes(dev)) choices.push(dev);
-            }
-            choices.sort(() => Math.random() - 0.5);
-
-            const container = document.getElementById('optionsBox');
-            container.innerHTML = '';
-            choices.forEach(val => {
-                const btn = document.createElement('div');
-                btn.className = 'option-card';
-                btn.innerText = val;
-                btn.onclick = () => checkAnswer(val, btn);
-                container.appendChild(btn);
-            });
-        }
-
-        function checkAnswer(selected, element) {
-            if (!acceptingInput) return;
-            acceptingInput = false;
-
-            const sndC = document.getElementById('sndCorrect');
-            const sndW = document.getElementById('sndWrong');
-            sndC.volume = sndW.volume = document.getElementById('volSlider').value;
-
-            if (selected === solutionValue) {
-                element.style.borderColor = 'var(--success)';
-                document.getElementById('feedbackBox').innerText = '🎉 Excellent Multiplier!';
-                document.getElementById('feedbackBox').className = 'feedback-message msg-correct';
-                sndC.play();
-                scoreCount++;
-                confetti({ particleCount: 70, spread: 60 });
+            if (isCorrect) {
+                // Happy high chime
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.stop(audioCtx.currentTime + 0.3);
             } else {
-                element.style.borderColor = 'var(--danger)';
-                document.getElementById('feedbackBox').innerText = `Incorrect. The product is ${solutionValue}`;
-                document.getElementById('feedbackBox').className = 'feedback-message msg-wrong';
-                sndW.play();
+                // Sad low buzz
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                osc.stop(audioCtx.currentTime + 0.25);
+            }
+        }
+
+        // CSS Confetti Generator
+        function triggerConfetti() {
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = ['#f1c40f','#e74c3c','#3498db','#9b59b6','#2ecc71'][Math.floor(Math.random()*5)];
+                confetti.style.transform = `scale(${Math.random() * 1 + 0.5})`;
+                confetti.style.animationDuration = Math.random() * 1 + 0.5 + 's';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 1500);
+            }
+        }
+
+        // Shuffle questions array randomly
+        function shuffleQuestions() {
+            gameItems = [...allItems].sort(() => Math.random() - 0.5);
+        }
+
+        function loadQuestion() {
+            if (currentIndex < gameItems.length) {
+                canAnswer = true;
+                document.getElementById('feedback-text').innerText = "";
+                document.getElementById('item-text').innerText = gameItems[currentIndex].name;
+                
+                // Update Progress Bar
+                const progPercent = (currentIndex / gameItems.length) * 100;
+                document.getElementById('progress').style.width = progPercent + "%";
+            } else {
+                showResults();
+            }
+        }
+
+        function checkAnswer(selectedType) {
+            if (!canAnswer) return;
+            canAnswer = false;
+
+            const correctAnswer = gameItems[currentIndex].type;
+            const feedbackEl = document.getElementById('feedback-text');
+
+            if (selectedType === correctAnswer) {
+                score++;
+                feedbackEl.style.color = "#2ecc71";
+                feedbackEl.innerText = "Correct! ✨";
+                playSound(true);
+                triggerConfetti();
+            } else {
+                feedbackEl.style.color = "#e74c3c";
+                feedbackEl.innerText = "Oops! Try another next time.";
+                playSound(false);
             }
 
-            setTimeout(() => {
-                currentRound++;
-                if (currentRound <= 10) generateQuestion();
-                else showScoreboard();
-            }, 1800);
+            // Move to next question automatically after 1.2 seconds
+            currentIndex++;
+            setTimeout(loadQuestion, 1200);
         }
 
-        function showScoreboard() {
-            document.getElementById('gameWorkspace').style.display = 'none';
-            document.getElementById('finalDashboard').style.display = 'block';
-            document.getElementById('finalScore').innerText = `${scoreCount} / 10`;
-            confetti({ particleCount: 140, spread: 80 });
+        function showResults() {
+            document.getElementById('progress').style.width = "100%";
+            document.getElementById('quiz-screen').style.display = "none";
+            document.getElementById('score-screen').style.display = "block";
+            document.getElementById('final-score-text').innerText = `${score} / ${gameItems.length}`;
         }
 
-        function resetEngine() {
-            currentRound = 1; scoreCount = 0;
-            document.getElementById('gameWorkspace').style.display = 'block';
-            document.getElementById('finalDashboard').style.display = 'none';
-            generateQuestion();
+        function restartGame() {
+            score = 0;
+            currentIndex = 0;
+            document.getElementById('quiz-screen').style.display = "block";
+            document.getElementById('score-screen').style.display = "none";
+            shuffleQuestions();
+            loadQuestion();
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                document.getElementById('splashOverlay').style.opacity = '0';
-                document.getElementById('splashOverlay').style.visibility = 'hidden';
-                document.getElementById('appMainCard').classList.add('reveal-app');
-                generateQuestion();
-            }, 5000);
-        });
+        // Initialize game on load
+        window.onload = () => {
+            shuffleQuestions();
+            loadQuestion();
+        };
     </script>
 </body>
 </html>
