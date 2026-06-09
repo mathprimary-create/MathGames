@@ -3,414 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Addition up to 9999 - Infinite Quest</title>
-    
+    <title>Grade 3: Multiplication Matrix</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
     <style>
         :root {
-            --primary: #6366f1;
-            --secondary: #06b6d4;
+            --primary: #0284c7;
             --success: #10b981;
             --danger: #ef4444;
-            --warning: #f59e0b;
-            --background: #0f172a;
+            --bg-gradient: linear-gradient(135deg, #fed7aa 0%, #bae6fd 100%);
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Comic Sans MS', sans-serif; }
+        body { overflow: hidden; background: var(--bg-gradient); height: 100vh; display: flex; justify-content: center; align-items: center; }
+        
+        #splashOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #ffffff; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.6s, visibility 0.6s; }
+        .logo-box { animation: breatheLogo 2.5s ease-in-out infinite alternate; }
+        @keyframes breatheLogo { 0% { transform: scale(0.96); } 100% { transform: scale(1.04); } }
+        .innovine-logo-img { width: 350px; height: auto; }
+        .splash-loader-track { width: 200px; height: 8px; background: #e2e8f0; border-radius: 10px; margin-top: 30px; overflow: hidden; }
+        .splash-loader-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #de1f26, #1f2c3f); animation: fillLoader 5s linear forwards; }
+        @keyframes fillLoader { 0% { width: 0%; } 100% { width: 100%; } }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            overflow: hidden;
-            background: radial-gradient(circle at center, #1e1b4b, #0f172a);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        /* --- Brand Launch Overlay Splash Screen --- */
-        #splashOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: #ffffff; /* White background to match the clean aesthetic of your corporate logo */
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.6s;
-        }
-
-        /* Animated Logo Framing Grid */
-        .logo-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            max-width: 85%;
-            animation: breatheLogo 2.5s ease-in-out infinite alternate;
-        }
-
-        @keyframes breatheLogo {
-            0% { transform: scale(0.97); filter: drop-shadow(0 4px 10px rgba(0,0,0,0.05)); }
-            100% { transform: scale(1.03); filter: drop-shadow(0 15px 30px rgba(0,0,0,0.15)); }
-        }
-
-        /* Standardized Corporate Asset Linkage */
-        .innovine-logo-img {
-            width: 100%;
-            max-width: 380px;
-            height: auto;
-            object-fit: contain;
-        }
-
-        /* 5-Second Linear Progress Loader Visual Indicator */
-        .splash-loader-track {
-            width: 240px;
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 10px;
-            margin-top: 35px;
-            overflow: hidden;
-        }
-
-        .splash-loader-bar {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #de1f26, #1f2c3f); /* Matches the corporate color palette */
-            border-radius: 10px;
-            animation: fillLoader 5s linear forwards;
-        }
-
-        @keyframes fillLoader {
-            0% { width: 0%; }
-            100% { width: 100%; }
-        }
-
-        /* --- Ambient Floating Symbols Background --- */
-        .math-particle {
-            position: absolute;
-            color: rgba(255, 255, 255, 0.03);
-            font-weight: bold;
-            user-select: none;
-            z-index: 1;
-            font-size: 36px;
-            animation: floatAmbient 12s ease-in-out infinite alternate;
-        }
-
-        @keyframes floatAmbient {
-            0% { transform: translateY(0px) rotate(0deg); }
-            100% { transform: translateY(-50px) rotate(30deg); }
-        }
-
-        /* --- Application Console Container --- */
-        .game-card {
-            width: 92%;
-            max-width: 700px;
-            background: rgba(255, 255, 255, 0.96);
-            padding: 35px 25px;
-            border-radius: 30px;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
-            text-align: center;
-            position: relative;
-            z-index: 10;
-            border: 4px solid var(--primary);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        /* Triggered after splash sequence completes */
-        .game-card.reveal-app {
-            opacity: 1;
-            transform: translateY(0px);
-        }
-
-        header h1 {
-            font-size: 32px;
-            color: #1e1b4b;
-            margin-bottom: 5px;
-        }
-
-        .subtitle {
-            font-size: 14px;
-            color: #64748b;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 25px;
-        }
-
-        /* Score & Timer Dashboard Pills */
-        .status-hub {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-
-        .pill {
-            background: #f1f5f9;
-            padding: 8px 16px;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 15px;
-            color: #334155;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border: 2px solid #e2e8f0;
-        }
-
-        .pill-timer { color: var(--danger); border-color: #fecaca; }
-        .pill-badge { color: var(--warning); border-color: #fef3c7; }
-
-        .volume-control {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 13px;
-            color: #475569;
-        }
-
-        .volume-control input {
-            cursor: pointer;
-            width: 65px;
-        }
-
-        /* Question Box Elements */
-        .question-container {
-            min-height: 120px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .question-tag {
-            background: var(--primary);
-            color: white;
-            padding: 5px 14px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
-        }
-
-        .question-text {
-            font-size: 22px;
-            color: #1e293b;
-            font-weight: 700;
-            line-height: 1.4;
-        }
-
-        /* Vertical Math Layout Worksheet Columns */
-        .math-grid {
-            display: inline-grid;
-            grid-template-columns: repeat(5, 42px);
-            gap: 4px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 28px;
-            font-weight: bold;
-            color: #0f172a;
-            background: #f8fafc;
-            padding: 15px;
-            border-radius: 12px;
-            border: 2px dashed #cbd5e1;
-            margin: 15px auto;
-            text-align: right;
-        }
-
-        .grid-header {
-            font-size: 13px;
-            color: #64748b;
-            border-bottom: 2px solid #cbd5e1;
-            padding-bottom: 4px;
-            font-family: sans-serif;
-            text-align: center;
-        }
-
-        .grid-line {
-            grid-column: span 5;
-            border-bottom: 3px solid #0f172a;
-            margin: 4px 0;
-        }
-
-        /* Dynamic Grid Answer Layout */
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        @media (max-width: 500px) {
-            .options-grid { grid-template-columns: 1fr; }
-        }
-
-        .option-card {
-            background: #ffffff;
-            padding: 16px;
-            border-radius: 16px;
-            font-size: 20px;
-            font-weight: 700;
-            color: #334155;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: 3px solid #e2e8f0;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .option-card:hover {
-            background: #f5f3ff;
-            border-color: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        /* Evaluation UI Boxes */
-        .action-container {
-            margin-top: 25px;
-            min-height: 50px;
-        }
-
-        .feedback-message {
-            font-size: 22px;
-            font-weight: 800;
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0.6); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
+        .game-card { width: 92%; max-width: 600px; background: white; padding: 30px 20px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); text-align: center; border: 6px solid #0284c7; opacity: 0; transform: scale(0.9); transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .game-card.reveal-app { opacity: 1; transform: scale(1); }
+        .status-hub { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .pill { background: #f3f4f6; padding: 8px 16px; border-radius: 50px; font-weight: bold; }
+        
+        .question-box { font-size: 52px; font-weight: bold; color: #0c4a6e; margin: 25px 0; background: #f0f9ff; border-radius: 16px; padding: 15px; border: 3px solid #7dd3fc; }
+        .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .option-card { background: white; padding: 18px; border-radius: 16px; font-size: 24px; font-weight: bold; cursor: pointer; transition: all 0.2s; border: 4px solid #e5e7eb; box-shadow: 0 6px 0 #d1d5db; }
+        .option-card:hover { transform: translateY(-3px); border-color: #38bdf8; box-shadow: 0 9px 0 #0284c7; background: #f0f9ff; }
+        
+        .feedback-message { font-size: 20px; font-weight: bold; min-height: 35px; margin-top: 20px; }
         .msg-correct { color: var(--success); }
         .msg-wrong { color: var(--danger); }
-
-        .btn-action {
-            margin-top: 15px;
-            padding: 12px 35px;
-            font-size: 18px;
-            font-weight: 700;
-            background: var(--success);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
-            transition: all 0.2s;
-        }
-
-        .btn-action:hover {
-            transform: scale(1.03);
-            filter: brightness(1.08);
-        }
-
-        /* Screen Visibility Modules */
         .screen-workspace { display: block; }
         .screen-final { display: none; }
-
-        .screen-final h2 {
-            font-size: 38px;
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-
-        .final-stats {
-            margin: 25px 0;
-            font-size: 22px;
-            color: #334155;
-            line-height: 2;
-        }
-
-        .btn-restart {
-            background: var(--primary);
-            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
-        }
     </style>
 </head>
 <body>
 
     <div id="splashOverlay">
-        <div class="logo-box">
-            <img src="logo.png" class="innovine-logo-img" alt="Innovine Solutions">
-        </div>
-        <div class="splash-loader-track">
-            <div class="splash-loader-bar"></div>
-        </div>
+        <div class="logo-box"><img src="logo.png" class="innovine-logo-img" alt="Logo"></div>
+        <div class="splash-loader-track"><div class="splash-loader-bar"></div></div>
     </div>
 
-    <div class="math-particle" style="top: 12%; left: 7%;">+</div>
-    <div class="math-particle" style="top: 78%; left: 10%;">=</div>
-    <div class="math-particle" style="top: 18%; right: 9%;">🧮</div>
-    <div class="math-particle" style="top: 82%; right: 12%;">+</div>
-
     <div class="game-card" id="appMainCard">
-        
         <header>
-            <h1>🏰 Addition Kingdom Quest</h1>
-            <p class="subtitle">Dynamic Math Training Platform</p>
+            <h1>⚡ Multiplication Masters</h1>
+            <p style="color:#6b7280; font-size:14px; text-transform:uppercase; margin-bottom:10px;">Grade 3 Math Quest</p>
         </header>
 
         <div id="gameWorkspace" class="screen-workspace">
-            
             <div class="status-hub">
-                <div class="pill pill-timer">
-                    ⏱️ <span id="clockValue">60</span>s
-                </div>
-                
-                <div class="volume-control">
-                    🔊 <input type="range" id="volSlider" min="0" max="1" step="0.1" value="0.8">
-                </div>
-
-                <div class="pill pill-badge">
-                    🏅 Score: <span id="currentRoundDisplay">1</span>/10
-                </div>
+                <div class="pill">🏅 Quest: <span id="roundNum">1</span>/10</div>
+                <div>🔊 <input type="range" id="volSlider" min="0" max="1" step="0.1" value="0.7"></div>
+                <div class="pill">⭐ Score: <span id="scoreDisplay">0</span></div>
             </div>
 
-            <div class="question-container">
-                <div class="question-tag" id="qTag">Quest Category</div>
-                <div class="question-text" id="qText">Generating dynamic math parameters...</div>
-                <div id="mathGridContainer"></div>
-            </div>
+            <p style="font-size: 18px; font-weight: bold; color: #4b5563;">Solve the multiplication puzzle:</p>
+            <div class="question-box" id="qBox">5 × 4 = ?</div>
 
             <div class="options-grid" id="optionsBox"></div>
-
-            <div class="action-container">
-                <div id="feedbackBox" class="feedback-message"></div>
-                <button class="btn-action" id="forwardBtn" style="display: none;">Next Quest ➜</button>
-            </div>
-
+            <div class="feedback-message" id="feedbackBox"></div>
         </div>
 
         <div id="finalDashboard" class="screen-final">
-            <h2>👑 Ultimate Champion! 👑</h2>
-            <p style="font-size: 18px; color: #475569;">You have successfully secured the operations training matrix.</p>
-            
-            <div class="final-stats">
-                <div>🎯 Mastered Accuracy: <strong id="finalScore" style="color:var(--primary);">0/10</strong></div>
-                <div>🏅 Total Stars Gained: <strong id="finalStars" style="color:var(--warning);">0</strong></div>
-            </div>
-
-            <button class="btn-action btn-restart" onclick="resetEngine()">Generate Brand New Game</button>
+            <h2 style="font-size:32px; color:#0284c7; margin-bottom:15px;">👑 Arena Mastered! 👑</h2>
+            <div style="font-size:22px; font-weight:bold; margin-bottom:20px;">Final Accuracy: <span id="finalScore" style="color:var(--success);">0/10</span></div>
+            <button style="padding:12px 30px; font-size:18px; font-weight:bold; background:var(--success); color:white; border:none; border-radius:12px; cursor:pointer;" onclick="resetEngine()">Play Again 🔄</button>
         </div>
-
     </div>
 
     <audio id="sndCorrect" src="correct.mp3"></audio>
@@ -418,55 +79,92 @@
 
     <script>
         let currentRound = 1;
-        const totalRounds = 10;
         let scoreCount = 0;
-        let timerCountdown;
-        let currentTimerSpan = 60;
-        let activeSolution = "";
+        let solutionValue = 0;
+        let acceptingInput = true;
 
-        // UI Selectors
-        const txtTag = document.getElementById('qTag');
-        const txtQuestion = document.getElementById('qText');
-        const elementGridBox = document.getElementById('mathGridContainer');
-        const wrapOptions = document.getElementById('optionsBox');
-        const labelFeedback = document.getElementById('feedbackBox');
-        const actionForwardBtn = document.getElementById('forwardBtn');
-        const currentRoundDisplay = document.getElementById('currentRoundDisplay');
-        const soundInputControl = document.getElementById('volSlider');
+        function generateQuestion() {
+            acceptingInput = true;
+            document.getElementById('feedbackBox').innerText = '';
+            document.getElementById('roundNum').innerText = currentRound;
+            document.getElementById('scoreDisplay').innerText = scoreCount * 10;
 
-        // Random Number Generators Helper Utils
-        function getRandomInt(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
+            let factorA = Math.floor(Math.random() * 10) + 1;
+            let factorB = Math.floor(Math.random() * 10) + 1;
+            solutionValue = factorA * factorB;
+
+            document.getElementById('qBox').innerText = `${factorA} × ${factorB} = ?`;
+
+            // Core algorithmic option distractors generation
+            let choices = [solutionValue];
+            while (choices.length < 4) {
+                let dev = solutionValue + (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 5) + 1);
+                if (dev > 0 && !choices.includes(dev)) choices.push(dev);
+            }
+            choices.sort(() => Math.random() - 0.5);
+
+            const container = document.getElementById('optionsBox');
+            container.innerHTML = '';
+            choices.forEach(val => {
+                const btn = document.createElement('div');
+                btn.className = 'option-card';
+                btn.innerText = val;
+                btn.onclick = () => checkAnswer(val, btn);
+                container.appendChild(btn);
+            });
         }
 
-        function shuffleArray(arr) {
-            return arr.sort(() => Math.random() - 0.5);
+        function checkAnswer(selected, element) {
+            if (!acceptingInput) return;
+            acceptingInput = false;
+
+            const sndC = document.getElementById('sndCorrect');
+            const sndW = document.getElementById('sndWrong');
+            sndC.volume = sndW.volume = document.getElementById('volSlider').value;
+
+            if (selected === solutionValue) {
+                element.style.borderColor = 'var(--success)';
+                document.getElementById('feedbackBox').innerText = '🎉 Excellent Multiplier!';
+                document.getElementById('feedbackBox').className = 'feedback-message msg-correct';
+                sndC.play();
+                scoreCount++;
+                confetti({ particleCount: 70, spread: 60 });
+            } else {
+                element.style.borderColor = 'var(--danger)';
+                document.getElementById('feedbackBox').innerText = `Incorrect. The product is ${solutionValue}`;
+                document.getElementById('feedbackBox').className = 'feedback-message msg-wrong';
+                sndW.play();
+            }
+
+            setTimeout(() => {
+                currentRound++;
+                if (currentRound <= 10) generateQuestion();
+                else showScoreboard();
+            }, 1800);
         }
 
-        // --- Core AI Game Engine: Algorithmic Question Generator ---
-        function generateDynamicQuestion() {
-            const coreTypes = ["property", "carry-check", "calculation", "story"];
-            let activeType = coreTypes[(currentRound - 1) % coreTypes.length];
-            
-            let queryText = "";
-            let gridObject = null;
-            let options = [];
-            let solution = "";
-            let tagLabel = "";
-            let tagColor = "var(--primary)";
+        function showScoreboard() {
+            document.getElementById('gameWorkspace').style.display = 'none';
+            document.getElementById('finalDashboard').style.display = 'block';
+            document.getElementById('finalScore').innerText = `${scoreCount} / 10`;
+            confetti({ particleCount: 140, spread: 80 });
+        }
 
-            if (activeType === "property") {
-                tagLabel = "⚡ Property Quest";
-                tagColor = "var(--primary)";
-                const propertySubMode = getRandomInt(1, 3);
-                
-                if (propertySubMode === 1) { // Commutative Order Property
-                    let valA = getRandomInt(1000, 4999);
-                    let valB = getRandomInt(1000, 4999);
-                    queryText = `Fill in the missing value using addition properties:<br><strong>${valA} + ${valB} = _____ + ${valA}</strong>`;
-                    solution = valB.toString();
-                    options = [solution, valA.toString(), (valA + valB).toString(), "0"];
-                } else if (propertySubMode === 2) { // Identity Property of Zero
-                    let valA = getRandomInt(1000, 9999);
-                    queryText = `Solve instantly using identity logic:<br><strong>${valA} + 0 = _____</strong>`;
-                    solution = valA.toString();
+        function resetEngine() {
+            currentRound = 1; scoreCount = 0;
+            document.getElementById('gameWorkspace').style.display = 'block';
+            document.getElementById('finalDashboard').style.display = 'none';
+            generateQuestion();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.getElementById('splashOverlay').style.opacity = '0';
+                document.getElementById('splashOverlay').style.visibility = 'hidden';
+                document.getElementById('appMainCard').classList.add('reveal-app');
+                generateQuestion();
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
