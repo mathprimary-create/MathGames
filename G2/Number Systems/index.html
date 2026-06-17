@@ -1,262 +1,366 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Number Ordering Game</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 2 Time & Seasons Learning Game</title>
+    <!-- Canvas Confetti Library for Celebrations -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', sans-serif;
+        }
 
-<style>
-body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background: linear-gradient(to right, #ffecd2, #fcb69f);
-    margin: 0;
-    padding: 20px;
-}
+        body {
+            background: linear-gradient(135deg, #ffdeb4 0%, #b2ebf2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
 
-h1 {
-    color: #333;
-}
+        /* --- SPLASH SCREEN --- */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+        }
 
-#game {
-    max-width: 500px;
-    margin: auto;
-}
+        #splash-screen img {
+            max-width: 280px;
+            height: auto;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
 
-.box-container {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
-    flex-wrap: wrap;
-}
+        #splash-screen h2 {
+            color: #ff5722;
+            font-size: 24px;
+            text-align: center;
+        }
 
-.box {
-    width: 60px;
-    height: 60px;
-    border: 2px dashed #555;
-    margin: 10px;
-    line-height: 60px;
-    font-size: 20px;
-    background: #fff;
-    border-radius: 10px;
-}
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
 
-.number {
-    display: inline-block;
-    padding: 15px;
-    margin: 10px;
-    background: #4caf50;
-    color: white;
-    border-radius: 10px;
-    cursor: grab;
-    font-size: 18px;
-}
+        /* --- GAME CONTAINER --- */
+        .game-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border: 4px solid #4caf50;
+            text-align: center;
+            display: none; /* Hidden until splash finishes */
+        }
 
-#message {
-    font-size: 22px;
-    margin-top: 10px;
-}
+        /* --- UTILITIES & CONTROLS --- */
+        .audio-controls {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #555;
+        }
 
-#restart {
-    display: none;
-    padding: 10px 20px;
-    font-size: 18px;
-    margin-top: 20px;
-}
+        .audio-controls input {
+            cursor: pointer;
+        }
 
-#volumeControl {
-    margin-top: 10px;
-}
+        .progress-bar {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            height: 14px;
+            width: 100%;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
 
-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-}
-</style>
+        .progress-fill {
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-box {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            min-height: 60px;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+
+        /* --- BUTTONS --- */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 480px) {
+            .options-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .btn-option {
+            background-color: #fff;
+            border: 3px solid #2196f3;
+            color: #2196f3;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 0 #1976d2;
+        }
+
+        .btn-option:hover:not(:disabled) {
+            background-color: #e3f2fd;
+            transform: translateY(-2px);
+        }
+
+        .btn-option:active:not(:disabled) {
+            transform: translateY(2px);
+            box-shadow: 0 0px 0 #1976d2;
+        }
+
+        .btn-option.correct {
+            background-color: #4caf50 !important;
+            border-color: #388e3c !important;
+            color: white !important;
+            box-shadow: 0 4px 0 #2e7d32 !important;
+        }
+
+        .btn-option.wrong {
+            background-color: #f44336 !important;
+            border-color: #d32f2f !important;
+            color: white !important;
+            box-shadow: 0 4px 0 #c62828 !important;
+        }
+
+        .btn-restart {
+            background-color: #ff9800;
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #e65100;
+            margin-top: 15px;
+            display: inline-block;
+        }
+
+        .btn-restart:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #e65100;
+        }
+
+        /* --- SCOREBOARD --- */
+        .score-display {
+            font-size: 24px;
+            color: #4caf50;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
-
 <body>
 
-<h1>🎲 Number Ordering Game</h1>
-<p id="instruction"></p>
+    <!-- 5-Second Splash Screen -->
+    <div id="splash-screen">
+        <img src="assets/innovine-logo.png" alt="Innovine Logo" onerror="this.src='https://placehold.co/280x150?text=Innovine+Logo'">
+        <h2>Loading Game...</h2>
+    </div>
 
-<div id="game">
-    <div class="box-container" id="dropZone"></div>
-    <div id="numbers"></div>
-    <div id="message"></div>
-</div>
+    <!-- Main Game Container -->
+    <div class="game-container" id="game-box">
+        <div class="audio-controls">
+            <label for="volume-slider">🔊 Vol: </label>
+            <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.8">
+        </div>
 
-<input type="range" id="volumeControl" min="0" max="1" step="0.1" value="1">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
 
-<button id="restart" onclick="startGame()">Restart Game</button>
+        <div id="quiz-section">
+            <div class="question-box" id="question">Question text goes here?</div>
+            <div class="options-grid" id="options-container">
+                <!-- Dynamic choices injection -->
+            </div>
+        </div>
 
-<canvas id="confetti"></canvas>
+        <div id="result-section" style="display: none;">
+            <div class="score-display" id="final-score">Game Completed!</div>
+            <p style="font-size: 18px; color:#555; margin-bottom:15px;">Great effort practicing your time skills!</p>
+            <button class="btn-restart" onclick="restartGame()">Play Again</button>
+        </div>
+    </div>
 
-<audio id="correctSound" src="correct.mp3"></audio>
-<audio id="wrongSound" src="wrong.mp3"></audio>
+    <!-- Audio Elements using project paths -->
+    <audio id="audio-correct" src="assets/correct.mp3" preload="auto"></audio>
+    <audio id="audio-wrong" src="assets/wrong.mp3" preload="auto"></audio>
 
-<script>
-let questions = [];
-let currentQ = 0;
-let answer = [];
-let attempts = 0;
+    <script>
+        // Master Question List mapping exactly to Grade 2 curriculum benchmarks
+        const masterQuestions = [
+            { q: "If the minute hand is on 12 and the hour hand is on 4, what time is it?", a: ["4 o'clock", "12 o'clock", "Half past 4", "Half past 12"], correct: 0 },
+            { q: "What does it mean when the minute hand points directly to 6?", a: ["It is half past the hour", "It is o'clock", "It is a new day", "It is noon"], correct: 0 },
+            { q: "If today is Wednesday, what day was yesterday?", a: ["Tuesday", "Thursday", "Monday", "Friday"], correct: 0 },
+            { q: "Choose the correct order of these days:", a: ["Friday, Saturday, Sunday", "Monday, Wednesday, Tuesday", "Sunday, Friday, Saturday", "Thursday, Tuesday, Wednesday"], correct: 0 },
+            { q: "How many months are there in one single year?", a: ["12", "7", "10", "30"], correct: 0 },
+            { q: "Which of these months has exactly 30 days?", a: ["April", "January", "July", "December"], correct: 0 },
+            { q: "How many days does February have during a Leap Year?", a: ["29 days", "28 days", "30 days", "31 days"], correct: 0 },
+            { q: "How often does a Leap Year occur?", a: ["Every 4 years", "Every year", "Every 2 years", "Every 5 years"], correct: 0 },
+            { q: "What tool do we use to find out dates, days of the week, and months?", a: ["A calendar", "A clock", "A ruler", "A map"], correct: 0 },
+            { q: "In which season do we typically experience hot weather and bright sunny days?", a: ["Summer", "Winter", "Autumn", "Spring"], correct: 0 }
+        ];
 
-const correctSound = document.getElementById("correctSound");
-const wrongSound = document.getElementById("wrongSound");
-const volumeControl = document.getElementById("volumeControl");
+        let activeQuestions = [];
+        let currentIdx = 0;
+        let runningScore = 0;
+        let canAnswer = true;
 
-volumeControl.addEventListener("input", () => {
-    correctSound.volume = volumeControl.value;
-    wrongSound.volume = volumeControl.value;
-});
+        const correctAudio = document.getElementById('audio-correct');
+        const wrongAudio = document.getElementById('audio-wrong');
+        const volumeControl = document.getElementById('volume-slider');
 
-function generateQuestions() {
-    questions = [];
-    for (let i = 0; i < 10; i++) {
-        let nums = [];
-        while (nums.length < 4) {
-            let n = Math.floor(Math.random() * 500) + 1;
-            if (!nums.includes(n)) nums.push(n);
+        // Manage Volume controls
+        volumeControl.addEventListener('input', (e) => {
+            correctAudio.volume = e.target.value;
+            wrongAudio.volume = e.target.value;
+        });
+
+        // Handle the 5 Second Splash Screen Hand-off
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                const gameBox = document.getElementById('game-box');
+                
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    gameBox.style.display = 'block';
+                    initGame();
+                }, 500); 
+            }, 5000); // 5000 milliseconds = 5 seconds
+        });
+
+        function initGame() {
+            // Randomize questions for this game run
+            activeQuestions = [...masterQuestions].sort(() => Math.random() - 0.5);
+            currentIdx = 0;
+            runningScore = 0;
+            canAnswer = true;
+            
+            document.getElementById('quiz-section').style.display = 'block';
+            document.getElementById('result-section').style.display = 'none';
+            
+            renderQuestion();
         }
 
-        let type = Math.random() > 0.5 ? "asc" : "desc";
-        let sorted = [...nums].sort((a,b)=> a-b);
-        if (type === "desc") sorted.reverse();
+        function renderQuestion() {
+            canAnswer = true;
+            const progressPercent = (currentIdx / activeQuestions.length) * 100;
+            document.getElementById('progress').style.width = `${progressPercent}%`;
 
-        questions.push({nums, sorted, type});
-    }
-}
+            const currentData = activeQuestions[currentIdx];
+            document.getElementById('question').textContent = currentData.q;
 
-function loadQuestion() {
-    if (currentQ >= questions.length) {
-        document.getElementById("restart").style.display = "block";
-        document.getElementById("instruction").innerText = "🎉 Game Over!";
-        return;
-    }
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
 
-    const q = questions[currentQ];
-    answer = [];
-    attempts = 0;
+            // Generate structural mapping for answer variations while preserving target tracking
+            let answersWithMeta = currentData.a.map((ans, i) => ({ text: ans, isCorrect: i === currentData.correct }));
+            // Mix up choices on the display board
+            answersWithMeta.sort(() => Math.random() - 0.5);
 
-    document.getElementById("instruction").innerText =
-        q.type === "asc" ? "Arrange in ASCENDING order" : "Arrange in DESCENDING order";
+            answersWithMeta.forEach(choice => {
+                const button = document.createElement('button');
+                button.className = 'btn-option';
+                button.textContent = choice.text;
+                button.onclick = () => evaluationHandler(button, choice.isCorrect);
+                optionsContainer.appendChild(button);
+            });
+        }
 
-    const dropZone = document.getElementById("dropZone");
-    dropZone.innerHTML = "";
+        function evaluationHandler(clickedBtn, isCorrect) {
+            if (!canAnswer) return;
+            canAnswer = false;
 
-    for (let i = 0; i < q.nums.length; i++) {
-        let box = document.createElement("div");
-        box.className = "box";
-        box.dataset.index = i;
+            const allButtons = document.querySelectorAll('.btn-option');
+            allButtons.forEach(btn => btn.disabled = true);
 
-        box.ondragover = (e) => e.preventDefault();
-        box.ondrop = drop;
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                runningScore++;
+                try { correctAudio.play(); } catch(e) {}
+                
+                // Blast confetti animations
+                confetti({
+                    particleCount: 80,
+                    spread: 60,
+                    origin: { y: 0.7 }
+                });
+            } else {
+                clickedBtn.classList.add('wrong');
+                try { wrongAudio.play(); } catch(e) {}
+                
+                // Highlight correct selection for learning reinforcement
+                allButtons.forEach(btn => {
+                    if (btn.textContent === activeQuestions[currentIdx].a[activeQuestions[currentIdx].correct]) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
 
-        dropZone.appendChild(box);
-    }
-
-    const numbersDiv = document.getElementById("numbers");
-    numbersDiv.innerHTML = "";
-
-    shuffle(q.nums).forEach(num => {
-        let el = document.createElement("div");
-        el.className = "number";
-        el.innerText = num;
-        el.draggable = true;
-
-        el.ondragstart = drag;
-
-        numbersDiv.appendChild(el);
-    });
-
-    document.getElementById("message").innerText = "";
-}
-
-function drag(e) {
-    e.dataTransfer.setData("text", e.target.innerText);
-}
-
-function drop(e) {
-    e.preventDefault();
-    let data = e.dataTransfer.getData("text");
-    e.target.innerText = data;
-    answer[e.target.dataset.index] = Number(data);
-
-    if (answer.filter(x => x !== undefined).length === 4) {
-        checkAnswer();
-    }
-}
-
-function checkAnswer() {
-    let correct = JSON.stringify(answer) === JSON.stringify(questions[currentQ].sorted);
-
-    if (correct) {
-        correctSound.play();
-        showConfetti();
-        document.getElementById("message").innerText = "✅ Correct!";
-        
-        setTimeout(() => {
-            currentQ++;
-            loadQuestion();
-        }, 1500);
-
-    } else {
-        attempts++;
-
-        if (attempts === 1) {
-            wrongSound.play();
-            document.getElementById("message").innerText = "❌ Try Again!";
-
-            // Clear boxes for retry
-            document.querySelectorAll(".box").forEach(box => box.innerText = "");
-            answer = [];
-
-        } else {
-            wrongSound.play();
-            document.getElementById("message").innerText =
-                "❌ Correct answer: " + questions[currentQ].sorted.join(", ");
-
+            // Automatic linear advance delay
             setTimeout(() => {
-                currentQ++;
-                loadQuestion();
+                currentIdx++;
+                if (currentIdx < activeQuestions.length) {
+                    renderQuestion();
+                } else {
+                    displayEndgameSummary();
+                }
             }, 2000);
         }
-    }
-}
 
-function shuffle(arr) {
-    return arr.sort(() => Math.random() - 0.5);
-}
+        function displayEndgameSummary() {
+            document.getElementById('progress').style.width = '100%';
+            document.getElementById('quiz-section').style.display = 'none';
+            document.getElementById('result-section').style.display = 'block';
+            document.getElementById('final-score').textContent = `🎯 Score: ${runningScore} / ${activeQuestions.length}`;
+        }
 
-function startGame() {
-    currentQ = 0;
-    document.getElementById("restart").style.display = "none";
-    generateQuestions();
-    loadQuestion();
-}
-
-startGame();
-
-
-// 🎉 Confetti
-const canvas = document.getElementById("confetti");
-const ctx = canvas.getContext("2d");
-
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-function showConfetti() {
-    for (let i = 0; i < 100; i++) {
-        let x = Math.random() * canvas.width;
-        let y = Math.random() * canvas.height;
-        ctx.fillStyle = "hsl(" + Math.random()*360 + ",100%,50%)";
-        ctx.fillRect(x, y, 5, 5);
-    }
-    setTimeout(()=>ctx.clearRect(0,0,canvas.width,canvas.height),500);
-}
-</script>
-
+        function restartGame() {
+            initGame();
+        }
+    </script>
 </body>
 </html>
